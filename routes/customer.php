@@ -5,6 +5,7 @@ use App\Http\Controllers\Customer\ProviderController;
 use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Customer\VenueController;
 use App\Http\Controllers\Customer\BookingController;
+use App\Http\Controllers\Customer\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -65,5 +66,20 @@ Route::prefix('customer')->name('customer.')->group(function () {
             Route::put('/{id}', [ReviewController::class, 'update'])->name('update');
             Route::delete('/{id}', [ReviewController::class, 'destroy'])->name('destroy');
         });
+
+        // Payments
+        Route::prefix('payments')->name('payments.')->group(function () {
+            Route::post('/bookings/{bookingId}/initiate', [PaymentController::class, 'initiatePayment'])->name('initiate');
+            Route::get('/verify/{transactionId}', [PaymentController::class, 'verifyPayment'])->name('verify');
+            Route::get('/{paymentId}', [PaymentController::class, 'getPaymentDetails'])->name('details');
+            Route::get('/', [PaymentController::class, 'history'])->name('history');
+        });
+    });
+
+    // Payment callback routes (public - accessed by payment gateway)
+    Route::prefix('payment')->name('payment.')->group(function () {
+        Route::post('/webhook', [PaymentController::class, 'webhook'])->name('webhook');
+        Route::get('/callback', [PaymentController::class, 'callback'])->name('callback');
+        Route::get('/cancel', [PaymentController::class, 'cancel'])->name('cancel');
     });
 });

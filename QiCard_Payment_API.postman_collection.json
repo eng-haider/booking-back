@@ -1,0 +1,402 @@
+{
+  "info": {
+    "name": "QiCard Payment API - Booking System",
+    "description": "Collection for testing QiCard payment integration in the Booking API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "customer_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "booking_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "payment_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Payment Operations",
+      "item": [
+        {
+          "name": "1. Initiate Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.success && jsonData.data) {",
+                  "        pm.environment.set('payment_id', jsonData.data.payment_id);",
+                  "        pm.environment.set('transaction_id', jsonData.data.transaction_id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"return_url\": \"https://yourapp.com/payment/success\",\n    \"cancel_url\": \"https://yourapp.com/payment/cancel\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/customer/payments/bookings/{{booking_id}}/initiate",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payments", "bookings", "{{booking_id}}", "initiate"]
+            },
+            "description": "Initiates a payment for a specific booking. Returns payment URL for customer to complete payment."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Verify Payment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payments/verify/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payments", "verify", "{{transaction_id}}"]
+            },
+            "description": "Verifies the status of a payment with QiCard payment gateway."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Get Payment Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payments/{{payment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payments", "{{payment_id}}"]
+            },
+            "description": "Retrieves detailed information about a specific payment."
+          },
+          "response": []
+        },
+        {
+          "name": "4. Get Payment History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payments?page=1",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payments"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Retrieves paginated payment history for the authenticated customer."
+          },
+          "response": []
+        }
+      ],
+      "description": "Payment operations for customers"
+    },
+    {
+      "name": "Payment Gateway Callbacks",
+      "item": [
+        {
+          "name": "Webhook (from QiCard)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"transaction_id\": \"TXN123456789\",\n    \"status\": \"success\",\n    \"amount\": 50000,\n    \"currency\": \"IQD\",\n    \"signature\": \"generated_signature_hash\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/customer/payment/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payment", "webhook"]
+            },
+            "description": "Webhook endpoint that receives async notifications from QiCard when payment status changes."
+          },
+          "response": []
+        },
+        {
+          "name": "Payment Callback (return URL)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payment/callback?transaction_id={{transaction_id}}&status=success",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payment", "callback"],
+              "query": [
+                {
+                  "key": "transaction_id",
+                  "value": "{{transaction_id}}"
+                },
+                {
+                  "key": "status",
+                  "value": "success"
+                }
+              ]
+            },
+            "description": "Callback endpoint where QiCard redirects the customer after payment completion."
+          },
+          "response": []
+        },
+        {
+          "name": "Payment Cancel",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payment/cancel?transaction_id={{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payment", "cancel"],
+              "query": [
+                {
+                  "key": "transaction_id",
+                  "value": "{{transaction_id}}"
+                }
+              ]
+            },
+            "description": "Callback endpoint where QiCard redirects when customer cancels the payment."
+          },
+          "response": []
+        }
+      ],
+      "description": "Public endpoints for QiCard gateway callbacks"
+    },
+    {
+      "name": "Test Complete Flow",
+      "item": [
+        {
+          "name": "Step 1: Create Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.success && jsonData.data) {",
+                  "        pm.environment.set('booking_id', jsonData.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"venue_id\": 1,\n    \"booking_date\": \"2025-12-25\",\n    \"start_time\": \"10:00\",\n    \"end_time\": \"12:00\",\n    \"notes\": \"Test booking for payment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/customer/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "bookings"]
+            },
+            "description": "First step: Create a new booking"
+          },
+          "response": []
+        },
+        {
+          "name": "Step 2: Initiate Payment for Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.success && jsonData.data) {",
+                  "        pm.environment.set('payment_id', jsonData.data.payment_id);",
+                  "        pm.environment.set('transaction_id', jsonData.data.transaction_id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"return_url\": \"https://yourapp.com/payment/success\",\n    \"cancel_url\": \"https://yourapp.com/payment/cancel\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/customer/payments/bookings/{{booking_id}}/initiate",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payments", "bookings", "{{booking_id}}", "initiate"]
+            },
+            "description": "Second step: Initiate payment for the created booking"
+          },
+          "response": []
+        },
+        {
+          "name": "Step 3: Check Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/customer/payments/{{payment_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["customer", "payments", "{{payment_id}}"]
+            },
+            "description": "Third step: Check the payment status"
+          },
+          "response": []
+        }
+      ],
+      "description": "Complete test flow from booking creation to payment"
+    }
+  ]
+}

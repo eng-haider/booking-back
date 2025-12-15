@@ -75,11 +75,18 @@ class BookingRepository
             $venue = \App\Models\Venue::findOrFail($data['venue_id']);
             
             // Calculate total price based on hours
+            $startTime = \Carbon\Carbon::parse($data['start_time']);
+            $endTime = \Carbon\Carbon::parse($data['end_time']);
+            $hours = $endTime->diffInHours($startTime);
+            
+            // Use price_per_hour if available, otherwise use base_price, or default to 0
             if ($venue->price_per_hour) {
-                $startTime = \Carbon\Carbon::parse($data['start_time']);
-                $endTime = \Carbon\Carbon::parse($data['end_time']);
-                $hours = $endTime->diffInHours($startTime);
                 $data['total_price'] = $venue->price_per_hour * $hours;
+            } elseif ($venue->base_price) {
+                $data['total_price'] = $venue->base_price;
+            } else {
+                // Default to 0 if no price is set (can be updated later)
+                $data['total_price'] = 0;
             }
             
             // Get pending status

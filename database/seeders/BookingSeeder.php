@@ -245,7 +245,6 @@ class BookingSeeder extends Seeder
                 'user_id' => $user ? $user->id : null,
                 'customer_id' => $bookingData['customer']->id,
                 'venue_id' => $bookingData['venue']->id,
-                'resource_id' => null,
                 'booking_reference' => 'BK-' . strtoupper(substr(md5(uniqid()), 0, 8)),
                 'booking_date' => $bookingData['booking_date'],
                 'start_time' => $bookingData['start_time'],

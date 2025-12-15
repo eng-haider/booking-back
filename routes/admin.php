@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ProviderController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\VenueController;
+use App\Http\Controllers\Admin\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -120,6 +121,16 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
         Route::get('/provider/{providerId}', [ReviewController::class, 'byProvider']);
         Route::get('/{id}', [ReviewController::class, 'show']);
         Route::delete('/{id}', [ReviewController::class, 'destroy']);
+    });
+
+    // Payment Management
+    Route::prefix('payments')->group(function () {
+        Route::get('/', [PaymentController::class, 'index']);
+        Route::get('/statistics', [PaymentController::class, 'statistics']);
+        Route::get('/recent-activities', [PaymentController::class, 'recentActivities']);
+        Route::get('/{id}', [PaymentController::class, 'show']);
+        Route::post('/{id}/verify', [PaymentController::class, 'verify']);
+        Route::post('/{id}/refund', [PaymentController::class, 'refund']);
     });
     
 });

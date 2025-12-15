@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BookingStatus;
+use App\Traits\HasPayment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Booking extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPayment;
 
     protected $fillable = [
         'user_id',
@@ -22,6 +23,7 @@ class Booking extends Model
         'end_time',
         'total_price',
         'status_id',
+        'payment_status',
         'notes',
         'special_requests',
         'cancellation_reason',

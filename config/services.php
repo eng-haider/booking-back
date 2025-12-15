@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'qicard' => [
+        'api_url' => env('QICARD_BASE_URL', 'https://uat-sandbox-3ds-api.qi.iq/api/v1/'),
+        'username' => env('QICARD_USERNAME'),
+        'password' => env('QICARD_PASSWORD'),
+        'terminal_id' =>237984,
+        'public_key_path' => env('QICARD_PUBLIC_KEY_PATH', 'storage/qicard/public-key.pem'),
+        'verify_webhooks' => env('QICARD_VERIFY_WEBHOOKS', false),
+        'webhook_url' => env('QICARD_WEBHOOK_URL'),
+        'currency' => env('QICARD_CURRENCY', 'IQD'),
+    ],
+
 ];
