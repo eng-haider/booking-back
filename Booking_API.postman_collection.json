@@ -1,0 +1,1482 @@
+{
+	"info": {
+		"name": "Booking System API",
+		"description": "Complete API collection for Booking System with Admin, Provider, and Customer endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "provider_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customer_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"admin@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/auth/login",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "auth", "login"]
+								},
+								"description": "Test Admin: admin@test.com | Phone: +9641234567890 | OTP: 123456"
+							}
+						},
+						{
+							"name": "Verify OTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"admin@test.com\",\n    \"otp\": \"123456\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/auth/verify-otp",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "auth", "verify-otp"]
+								},
+								"description": "Use OTP: 123456"
+							}
+						},
+						{
+							"name": "Me",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/auth/me",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "auth", "me"]
+								}
+							}
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/auth/logout",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "auth", "logout"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Providers",
+					"item": [
+						{
+							"name": "Get All Providers",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/providers?filter[status]=approved&sort=-created_at",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "providers"],
+									"query": [
+										{
+											"key": "filter[status]",
+											"value": "approved"
+										},
+										{
+											"key": "sort",
+											"value": "-created_at"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Provider By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/providers/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "providers", "1"]
+								}
+							}
+						},
+						{
+							"name": "Create Provider",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"provider@example.com\",\n    \"phone\": \"+1234567890\",\n    \"business_name\": \"Sports Hub\",\n    \"business_license\": \"LIC123456\",\n    \"address\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"country\": \"USA\",\n    \"status\": \"pending\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/providers",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "providers"]
+								}
+							}
+						},
+						{
+							"name": "Update Provider",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"status\": \"approved\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/providers/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "providers", "1"]
+								}
+							}
+						},
+						{
+							"name": "Delete Provider",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/providers/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "providers", "1"]
+								}
+							}
+						},
+						{
+							"name": "Get Statistics",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/providers/statistics",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "providers", "statistics"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Customers",
+					"item": [
+						{
+							"name": "Get All Customers",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/customers",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "customers"]
+								}
+							}
+						},
+						{
+							"name": "Get Customer By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/customers/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "customers", "1"]
+								}
+							}
+						},
+						{
+							"name": "Create Customer",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Jane Smith\",\n    \"email\": \"customer@example.com\",\n    \"phone\": \"+1234567890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/customers",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "customers"]
+								}
+							}
+						},
+						{
+							"name": "Update Customer",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Jane Smith Updated\",\n    \"email_verified_at\": \"2025-12-09 10:00:00\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/customers/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "customers", "1"]
+								}
+							}
+						},
+						{
+							"name": "Delete Customer",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/customers/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "customers", "1"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Bookings",
+					"item": [
+						{
+							"name": "Get All Bookings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/bookings?filter[status_id]=1&sort=-booking_date",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "bookings"],
+									"query": [
+										{
+											"key": "filter[status_id]",
+											"value": "1"
+										},
+										{
+											"key": "sort",
+											"value": "-booking_date"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Booking By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/bookings/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "bookings", "1"]
+								}
+							}
+						},
+						{
+							"name": "Create Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"customer_id\": 1,\n    \"venue_id\": 1,\n    \"resource_id\": 1,\n    \"booking_date\": \"2025-12-15\",\n    \"start_time\": \"10:00\",\n    \"end_time\": \"12:00\",\n    \"total_price\": 100.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/bookings",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "bookings"]
+								}
+							}
+						},
+						{
+							"name": "Update Booking",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"booking_date\": \"2025-12-16\",\n    \"start_time\": \"14:00\",\n    \"end_time\": \"16:00\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/bookings/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "bookings", "1"]
+								}
+							}
+						},
+						{
+							"name": "Confirm Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/bookings/1/confirm",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "bookings", "1", "confirm"]
+								}
+							}
+						},
+						{
+							"name": "Cancel Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"reason\": \"Customer requested cancellation\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/bookings/1/cancel",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "bookings", "1", "cancel"]
+								}
+							}
+						},
+						{
+							"name": "Complete Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/bookings/1/complete",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "bookings", "1", "complete"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Venues",
+					"item": [
+						{
+							"name": "Get All Venues",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/venues?filter[status]=active",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "venues"],
+									"query": [
+										{
+											"key": "filter[status]",
+											"value": "active"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Venue By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/venues/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "venues", "1"]
+								}
+							}
+						},
+						{
+							"name": "Create Venue",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"provider_id\": 1,\n    \"venue_type_id\": 1,\n    \"name\": \"Downtown Sports Complex\",\n    \"description\": \"Modern sports facility\",\n    \"address\": \"123 Sports Ave\",\n    \"city\": \"New York\",\n    \"country_id\": 1,\n    \"lat\": 40.7128,\n    \"lng\": -74.0060,\n    \"base_price\": 50.00,\n    \"currency\": \"USD\",\n    \"status\": \"active\",\n    \"amenities\": [1, 2, 3]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/venues",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "venues"]
+								}
+							}
+						},
+						{
+							"name": "Update Venue",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Downtown Sports Complex Updated\",\n    \"base_price\": 60.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/venues/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "venues", "1"]
+								}
+							}
+						},
+						{
+							"name": "Delete Venue",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/venues/1",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "venues", "1"]
+								}
+							}
+						},
+						{
+							"name": "Toggle Featured",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/admin/venues/1/toggle-featured",
+									"host": ["{{base_url}}"],
+									"path": ["admin", "venues", "1", "toggle-featured"]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Provider",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"provider@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/provider/auth/login",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "auth", "login"]
+								},
+								"description": "Test Provider: provider@test.com | Phone: +9649876543210 | OTP: 123456"
+							}
+						},
+						{
+							"name": "Verify OTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"provider@test.com\",\n    \"otp\": \"123456\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/provider/auth/verify-otp",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "auth", "verify-otp"]
+								},
+								"description": "Use OTP: 123456"
+							}
+						},
+						{
+							"name": "Me",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/auth/me",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "auth", "me"]
+								}
+							}
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/auth/logout",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "auth", "logout"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Profile",
+					"item": [
+						{
+							"name": "Get Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/profile",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "profile"]
+								}
+							}
+						},
+						{
+							"name": "Update Profile",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Provider Name Updated\",\n    \"business_name\": \"New Business Name\",\n    \"phone\": \"+1234567890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/provider/profile",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "profile"]
+								}
+							}
+						},
+						{
+							"name": "Get Statistics",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/profile/statistics",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "profile", "statistics"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Venues",
+					"item": [
+						{
+							"name": "Get My Venues",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/venues?filter[status]=active",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "venues"],
+									"query": [
+										{
+											"key": "filter[status]",
+											"value": "active"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Venue By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/venues/1",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "venues", "1"]
+								}
+							}
+						},
+						{
+							"name": "Create Venue",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"venue_type_id\": 1,\n    \"name\": \"My Sports Field\",\n    \"description\": \"Great sports facility\",\n    \"address\": \"456 Provider St\",\n    \"city\": \"Los Angeles\",\n    \"country_id\": 1,\n    \"lat\": 34.0522,\n    \"lng\": -118.2437,\n    \"base_price\": 75.00,\n    \"currency\": \"USD\",\n    \"status\": \"active\",\n    \"amenities\": [1, 2]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/provider/venues",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "venues"]
+								}
+							}
+						},
+						{
+							"name": "Update Venue",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"My Sports Field Updated\",\n    \"base_price\": 80.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/provider/venues/1",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "venues", "1"]
+								}
+							}
+						},
+						{
+							"name": "Delete Venue",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/venues/1",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "venues", "1"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Bookings",
+					"item": [
+						{
+							"name": "Get My Bookings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/bookings?filter[status_id]=1",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "bookings"],
+									"query": [
+										{
+											"key": "filter[status_id]",
+											"value": "1"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Booking By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/bookings/1",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "bookings", "1"]
+								}
+							}
+						},
+						{
+							"name": "Confirm Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/bookings/1/confirm",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "bookings", "1", "confirm"]
+								}
+							}
+						},
+						{
+							"name": "Cancel Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"reason\": \"Venue maintenance required\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/provider/bookings/1/cancel",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "bookings", "1", "cancel"]
+								}
+							}
+						},
+						{
+							"name": "Complete Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/bookings/1/complete",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "bookings", "1", "complete"]
+								}
+							}
+						},
+						{
+							"name": "Get Statistics",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{provider_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/provider/bookings/statistics",
+									"host": ["{{base_url}}"],
+									"path": ["provider", "bookings", "statistics"]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Customer\",\n    \"phone\": \"+1234567890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/auth/register",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "auth", "register"]
+								}
+							}
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"phone\": \"+9645555555555\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/auth/login",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "auth", "login"]
+								},
+								"description": "Test Customer: Phone: +9645555555555 | OTP: 123456"
+							}
+						},
+						{
+							"name": "Verify OTP",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"phone\": \"+9645555555555\",\n    \"code\": \"123456\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/auth/verify-otp",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "auth", "verify-otp"]
+								},
+								"description": "Use OTP: 123456"
+							}
+						},
+						{
+							"name": "Me",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/auth/me",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "auth", "me"]
+								}
+							}
+						},
+						{
+							"name": "Update Profile",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Customer Name Updated\",\n    \"phone\": \"+1234567890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/auth/profile",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "auth", "profile"]
+								}
+							}
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/auth/logout",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "auth", "logout"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Providers",
+					"item": [
+						{
+							"name": "Get All Providers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/providers?filter[city]=New York",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "providers"],
+									"query": [
+										{
+											"key": "filter[city]",
+											"value": "New York"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Search Providers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/providers/search?query=sports",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "providers", "search"],
+									"query": [
+										{
+											"key": "query",
+											"value": "sports"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Provider By ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/providers/1",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "providers", "1"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Venues",
+					"item": [
+						{
+							"name": "Get All Venues",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/venues?filter[city]=New York&filter[venue_type_id]=1",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "venues"],
+									"query": [
+										{
+											"key": "filter[city]",
+											"value": "New York"
+										},
+										{
+											"key": "filter[venue_type_id]",
+											"value": "1"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Featured Venues",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/venues/featured",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "venues", "featured"]
+								}
+							}
+						},
+						{
+							"name": "Search Venues",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/venues/search?query=football",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "venues", "search"],
+									"query": [
+										{
+											"key": "query",
+											"value": "football"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Venues By Location",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/venues/location?city=New York&country_id=1",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "venues", "location"],
+									"query": [
+										{
+											"key": "city",
+											"value": "New York"
+										},
+										{
+											"key": "country_id",
+											"value": "1"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Get Venue By ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/venues/1",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "venues", "1"]
+								}
+							}
+						},
+						{
+							"name": "Check Venue Availability",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/customer/venues/1/availability?date=2025-12-15",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "venues", "1", "availability"],
+									"query": [
+										{
+											"key": "date",
+											"value": "2025-12-15"
+										}
+									]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "Bookings",
+					"item": [
+						{
+							"name": "Get My Bookings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/bookings",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "bookings"]
+								}
+							}
+						},
+						{
+							"name": "Create Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"venue_id\": 1,\n    \"resource_id\": 1,\n    \"booking_date\": \"2025-12-15\",\n    \"start_time\": \"10:00\",\n    \"end_time\": \"12:00\",\n    \"total_price\": 100.00,\n    \"notes\": \"Birthday party\",\n    \"special_requests\": \"Need extra chairs\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/bookings",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "bookings"]
+								}
+							}
+						},
+						{
+							"name": "Get Booking By ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/bookings/1",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "bookings", "1"]
+								}
+							}
+						},
+						{
+							"name": "Get Upcoming Bookings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/bookings/upcoming",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "bookings", "upcoming"]
+								}
+							}
+						},
+						{
+							"name": "Get Past Bookings",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/bookings/past",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "bookings", "past"]
+								}
+							}
+						},
+						{
+							"name": "Cancel Booking",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cancellation_reason\": \"Change of plans\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/bookings/1/cancel",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "bookings", "1", "cancel"]
+								}
+							}
+						},
+						{
+							"name": "Get Statistics",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{customer_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/bookings/statistics",
+									"host": ["{{base_url}}"],
+									"path": ["customer", "bookings", "statistics"]
+								}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
