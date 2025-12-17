@@ -22,6 +22,9 @@ class ProviderRepository
         return Provider::with($relations)->where('user_id', $userId)->first();
     }
 
+
+    
+
     /**
      * Update provider
      */
