@@ -38,7 +38,6 @@ class ProviderRepository
         return [
             'total_venues' => $provider->venues()->count(),
             'active_venues' => $provider->venues()->where('status', 'active')->count(),
-            'total_resources' => $provider->venues()->withCount('resources')->get()->sum('resources_count'),
             'total_bookings' => $provider->venues()->withCount('bookings')->get()->sum('bookings_count'),
             'pending_bookings' => $provider->venues()
                 ->with(['bookings' => fn($q) => $q->where('status', 'pending')])

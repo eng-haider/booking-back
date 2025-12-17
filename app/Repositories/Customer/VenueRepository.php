@@ -123,7 +123,6 @@ class VenueRepository
             ->whereHas('status', function ($q) {
                 $q->whereIn('slug', ['confirmed', 'pending']);
             })
-            ->with('resource')
             ->get();
 
         return [

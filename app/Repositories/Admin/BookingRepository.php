@@ -273,7 +273,7 @@ class BookingRepository
               ->orWhereHas('venue', function ($q2) use ($query) {
                   $q2->where('name', 'like', "%{$query}%");
               });
-        })->with(['customer', 'venue', 'resource'])
+        })->with(['customer', 'venue'])
           ->limit(20)
           ->get();
     }

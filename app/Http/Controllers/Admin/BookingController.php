@@ -65,7 +65,7 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Booking created successfully',
-            'data' => $booking->load(['customer', 'user', 'venue', 'resource']),
+            'data' => $booking->load(['customer', 'user', 'venue']),
         ], 201);
     }
 

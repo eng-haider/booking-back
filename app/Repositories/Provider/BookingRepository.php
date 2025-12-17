@@ -119,7 +119,7 @@ class BookingRepository
                     ->from('statuses')
                     ->whereIn('name', ['pending', 'confirmed']);
             })
-            ->with(['customer', 'venue', 'resource'])
+            ->with(['customer', 'venue'])
             ->orderBy('booking_date')
             ->orderBy('start_time')
             ->limit($limit)
@@ -137,7 +137,7 @@ class BookingRepository
                 $q->where('provider_id', $providerId);
             })
             ->where('booking_date', $today)
-            ->with(['customer', 'venue', 'resource'])
+            ->with(['customer', 'venue'])
             ->orderBy('start_time')
             ->get();
     }
