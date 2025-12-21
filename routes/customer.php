@@ -6,6 +6,7 @@ use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Customer\VenueController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\PaymentController;
+use App\Http\Controllers\Customer\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,10 @@ Route::prefix('customer')->name('customer.')->group(function () {
     });
 
     // Public routes (no authentication required)
+    Route::prefix('categories')->name('categories.')->group(function () {
+        Route::get('/', [CategoryController::class, 'index'])->name('index');
+    });
+
     Route::prefix('providers')->name('providers.')->group(function () {
         Route::get('/', [ProviderController::class, 'index'])->name('index');
         Route::get('/search', [ProviderController::class, 'search'])->name('search');
