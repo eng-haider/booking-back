@@ -24,7 +24,7 @@ class ProfileController extends Controller
     {
         $provider = $this->providerRepository->findByUserId(
             $request->user()->id,
-            ['user', 'venues.resources']
+            ['user', 'venues']
         );
 
         return response()->json([
