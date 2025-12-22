@@ -41,6 +41,7 @@ class VenueRepository
                 'photos',
                 'schedules',
                 'reviews',
+            'reviews.customer'
             ])
             ->where('status', 'active')
             ->defaultSort('-created_at')
