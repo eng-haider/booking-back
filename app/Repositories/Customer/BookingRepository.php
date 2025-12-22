@@ -42,6 +42,7 @@ class BookingRepository
                 'venue',
                 'venue.provider',
                 'venue.country',
+                'venue.photos',
                 'status',
                 'payment',
             ])
