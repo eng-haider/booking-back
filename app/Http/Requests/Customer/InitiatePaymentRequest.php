@@ -22,8 +22,7 @@ class InitiatePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'return_url' => 'sometimes|url|max:500',
-            'cancel_url' => 'sometimes|url|max:500',
+            // No validation needed - URLs are now configured in .env
         ];
     }
 
@@ -35,10 +34,7 @@ class InitiatePaymentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'return_url.url' => 'The return URL must be a valid URL.',
-            'return_url.max' => 'The return URL must not exceed 500 characters.',
-            'cancel_url.url' => 'The cancel URL must be a valid URL.',
-            'cancel_url.max' => 'The cancel URL must not exceed 500 characters.',
+            // No messages needed
         ];
     }
 }

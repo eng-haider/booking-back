@@ -21,6 +21,8 @@ class QiCardPaymentService
     protected string $currency;
     protected ?string $publicKeyPath;
     protected bool $verifyWebhooks;
+    protected ?string $returnUrl;
+    protected ?string $cancelUrl;
 
     public function __construct()
     {
@@ -31,6 +33,8 @@ class QiCardPaymentService
         $this->currency = config('services.qicard.currency', 'IQD');
         $this->publicKeyPath = config('services.qicard.public_key_path');
         $this->verifyWebhooks = config('services.qicard.verify_webhooks', false);
+        $this->returnUrl = config('services.qicard.return_url');
+        $this->cancelUrl = config('services.qicard.cancel_url');
         
         // Validate configuration
         $this->validateConfiguration();
@@ -84,8 +88,8 @@ class QiCardPaymentService
                 'currency' => $this->currency,
                 'merchantOrderId' => $orderId,
                 'description' => $this->generateDescription($booking),
-                'returnUrl' => $additionalData['return_url'] ?? route('customer.payment.callback'),
-                'notificationUrl' => config('services.qicard.webhook_url') ?? route('customer.payment.webhook'), // Webhook URL for status updates
+                'returnUrl' => $this->returnUrl, // From config/env
+                'notificationUrl' => config('services.qicard.webhook_url'), // Webhook URL for status updates
             ];
 
             // Create payment record
