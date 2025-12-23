@@ -169,7 +169,9 @@ class ScheduleService
     {
         $bookings = $venue->bookings()
             ->where('booking_date', $date)
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereHas('status', function ($query) {
+                $query->whereIn('slug', ['pending', 'confirmed']);
+            })
             ->get();
 
         $bookedSlots = [];
@@ -181,7 +183,7 @@ class ScheduleService
                 'booking_id' => $booking->id,
                 'start_time' => $startTime->format('H:i'),
                 'end_time' => $endTime->format('H:i'),
-                'status' => $booking->status,
+                'status' => $booking->status->slug ?? 'unknown',
             ];
         }
 
