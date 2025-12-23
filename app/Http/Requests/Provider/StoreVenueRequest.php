@@ -20,10 +20,9 @@ class StoreVenueRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:venues,slug', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'description' => ['nullable', 'string'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
             'base_price' => ['nullable', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'max:3'],
             'buffer_minutes' => ['nullable', 'integer', 'min:0'],
@@ -43,9 +42,9 @@ class StoreVenueRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Venue name is required',
             'slug.regex' => 'Slug must only contain lowercase letters, numbers, and hyphens',
             'slug.unique' => 'This slug is already taken',
+            'category_id.required' => 'Category is required',
             'category_id.exists' => 'Selected category does not exist',
             'base_price.min' => 'Base price must be at least 0',
             'currency.max' => 'Currency code must be 3 characters',
