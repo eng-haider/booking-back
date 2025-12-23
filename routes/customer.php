@@ -48,6 +48,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/location', [VenueController::class, 'byLocation'])->name('by-location');
         Route::get('/{id}', [VenueController::class, 'show'])->name('show');
         Route::get('/{id}/availability', [VenueController::class, 'availability'])->name('availability');
+        Route::get('/{id}/available-time-periods', [VenueController::class, 'availableTimePeriods'])->name('available-time-periods');
         Route::get('/{id}/reviews', [ReviewController::class, 'getVenueReviews'])->name('reviews');
     });
 

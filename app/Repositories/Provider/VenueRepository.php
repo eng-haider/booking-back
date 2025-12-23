@@ -175,10 +175,11 @@ class VenueRepository
      * Get available time periods for the venue.
      * 
      * @param Venue $venue
+     * @param string|null $date Optional date to check real availability (Y-m-d format)
      * @return array
      */
-    public function getAvailableTimePeriods(Venue $venue): array
+    public function getAvailableTimePeriods(Venue $venue, ?string $date = null): array
     {
-        return $this->scheduleService->getAllAvailableTimePeriods($venue);
+        return $this->scheduleService->getAllAvailableTimePeriods($venue, $date);
     }
 }

@@ -102,9 +102,10 @@ class ScheduleService
      * Get available time periods for all days of the week.
      * 
      * @param Venue $venue
+     * @param string|null $date Specific date to check bookings (Y-m-d format)
      * @return array
      */
-    public function getAllAvailableTimePeriods(Venue $venue): array
+    public function getAllAvailableTimePeriods(Venue $venue, ?string $date = null): array
     {
         $allPeriods = [];
         $daysOfWeek = [
@@ -129,7 +130,101 @@ class ScheduleService
             ];
         }
 
+        // If a specific date is provided, filter by that date's availability
+        if ($date) {
+            $dateCarbon = Carbon::parse($date);
+            $dayOfWeek = $dateCarbon->dayOfWeek;
+            $dayName = $daysOfWeek[$dayOfWeek];
+
+            // Get booked slots for this date
+            $bookedSlots = $this->getBookedSlotsForDate($venue, $date);
+
+            // Filter only the requested day and mark booked slots
+            return [
+                'date' => $date,
+                'day_name' => $dayName,
+                'day_of_week' => $dayOfWeek,
+                'is_closed' => $allPeriods[$dayName]['is_closed'],
+                'open_time' => $allPeriods[$dayName]['open_time'],
+                'close_time' => $allPeriods[$dayName]['close_time'],
+                'available_slots' => $this->filterBookedSlots(
+                    $allPeriods[$dayName]['available_slots'],
+                    $bookedSlots
+                ),
+                'booked_slots' => $bookedSlots,
+            ];
+        }
+
         return $allPeriods;
+    }
+
+    /**
+     * Get booked time slots for a specific date.
+     * 
+     * @param Venue $venue
+     * @param string $date
+     * @return array
+     */
+    private function getBookedSlotsForDate(Venue $venue, string $date): array
+    {
+        $bookings = $venue->bookings()
+            ->where('booking_date', $date)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->get();
+
+        $bookedSlots = [];
+        foreach ($bookings as $booking) {
+            $startTime = Carbon::parse($booking->start_time);
+            $endTime = Carbon::parse($booking->end_time);
+
+            $bookedSlots[] = [
+                'booking_id' => $booking->id,
+                'start_time' => $startTime->format('H:i'),
+                'end_time' => $endTime->format('H:i'),
+                'status' => $booking->status,
+            ];
+        }
+
+        return $bookedSlots;
+    }
+
+    /**
+     * Filter out booked slots from available slots.
+     * 
+     * @param array $availableSlots
+     * @param array $bookedSlots
+     * @return array
+     */
+    private function filterBookedSlots(array $availableSlots, array $bookedSlots): array
+    {
+        if (empty($bookedSlots)) {
+            // Mark all as available
+            return array_map(function ($slot) {
+                $slot['is_available'] = true;
+                return $slot;
+            }, $availableSlots);
+        }
+
+        return array_map(function ($slot) use ($bookedSlots) {
+            $slotStart = Carbon::parse($slot['start_time']);
+            $slotEnd = Carbon::parse($slot['end_time']);
+
+            // Check if this slot conflicts with any booking
+            $isAvailable = true;
+            foreach ($bookedSlots as $booked) {
+                $bookedStart = Carbon::parse($booked['start_time']);
+                $bookedEnd = Carbon::parse($booked['end_time']);
+
+                // Check for time overlap
+                if ($slotStart->lt($bookedEnd) && $slotEnd->gt($bookedStart)) {
+                    $isAvailable = false;
+                    break;
+                }
+            }
+
+            $slot['is_available'] = $isAvailable;
+            return $slot;
+        }, $availableSlots);
     }
 
     /**

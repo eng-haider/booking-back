@@ -259,7 +259,16 @@ class VenueController extends Controller
             ], 404);
         }
 
-        $availableTimePeriods = $this->venueRepository->getAvailableTimePeriods($venue);
+        // Validate date if provided
+        $date = $request->input('date');
+        if ($date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid date format. Use Y-m-d format (e.g., 2025-12-25)',
+            ], 422);
+        }
+
+        $availableTimePeriods = $this->venueRepository->getAvailableTimePeriods($venue, $date);
 
         return response()->json([
             'success' => true,
@@ -268,6 +277,7 @@ class VenueController extends Controller
                 'venue_name' => $venue->name,
                 'booking_duration_hours' => $venue->booking_duration_hours,
                 'buffer_minutes' => $venue->buffer_minutes,
+                'date' => $date,
                 'available_time_periods' => $availableTimePeriods,
             ],
         ]);

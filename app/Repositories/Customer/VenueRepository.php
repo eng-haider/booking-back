@@ -3,12 +3,17 @@
 namespace App\Repositories\Customer;
 
 use App\Models\Venue;
+use App\Services\ScheduleService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 
 class VenueRepository
 {
+    public function __construct(
+        protected ScheduleService $scheduleService
+    ) {}
+
     /**
      * Get all venues with filtering, sorting, and pagination.
      */
@@ -133,5 +138,21 @@ class VenueRepository
             'bookings' => $bookings,
             'resources' => $venue->resources,
         ];
+    }
+
+    /**
+     * Get available time periods for a venue.
+     * 
+     * @param int $venueId
+     * @param string|null $date Optional date to check real availability (Y-m-d format)
+     * @return array
+     */
+    public function getAvailableTimePeriods(int $venueId, ?string $date = null): array
+    {
+        $venue = Venue::with('schedules')
+            ->where('status', 'active')
+            ->findOrFail($venueId);
+
+        return $this->scheduleService->getAllAvailableTimePeriods($venue, $date);
     }
 }

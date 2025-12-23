@@ -43,10 +43,17 @@ class VenueController extends Controller
     {
         try {
             $venue = $this->venueRepository->findById($id);
+            
+            // Get available time periods for today by default, or all days if no date
+            $date = request()->input('date');
+            $availableTimePeriods = $this->venueRepository->getAvailableTimePeriods($id, $date);
 
             return response()->json([
                 'success' => true,
-                'data' => $venue,
+                'data' => [
+                    'venue' => $venue,
+                    'available_time_periods' => $availableTimePeriods,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -143,6 +150,42 @@ class VenueController extends Controller
                 'message' => 'Failed to fetch availability',
                 'error' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Get available time periods for a venue.
+     */
+    public function availableTimePeriods($id)
+    {
+        try {
+            // Get date from query parameter
+            $date = request()->input('date');
+            
+            // Validate date format if provided
+            if ($date && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid date format. Use Y-m-d format (e.g., 2025-12-25)',
+                ], 422);
+            }
+
+            $availableTimePeriods = $this->venueRepository->getAvailableTimePeriods($id, $date);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'venue_id' => $id,
+                    'date' => $date,
+                    'available_time_periods' => $availableTimePeriods,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch available time periods',
+                'error' => $e->getMessage(),
+            ], 404);
         }
     }
 }
