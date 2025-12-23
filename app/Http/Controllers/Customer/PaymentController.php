@@ -183,27 +183,54 @@ class PaymentController extends Controller
     public function webhook(Request $request)
     {
         try {
-            Log::info('Payment webhook received', $request->all());
+            // Log all incoming webhook data for debugging
+            Log::info('=== QiCard Webhook Received ===', [
+                'headers' => $request->headers->all(),
+                'body' => $request->all(),
+                'raw_body' => $request->getContent(),
+                'ip' => $request->ip(),
+                'timestamp' => now()->toISOString(),
+            ]);
+
+            $webhookData = $request->all();
+            
+            // Check if webhook has data
+            if (empty($webhookData)) {
+                Log::warning('Webhook received with empty data');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Empty webhook data',
+                ], 400);
+            }
 
             // Process callback
-            $payment = $this->paymentService->handleCallback($request->all());
+            $payment = $this->paymentService->handleCallback($webhookData);
+
+            Log::info('=== Webhook Processed Successfully ===', [
+                'payment_id' => $payment->id,
+                'status' => $payment->status->value,
+                'booking_id' => $payment->booking_id,
+            ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Webhook processed successfully',
+                'payment_id' => $payment->id,
             ]);
 
         } catch (Exception $e) {
-            Log::error('Webhook processing failed', [
+            Log::error('=== Webhook Processing Failed ===', [
                 'data' => $request->all(),
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
+            // Still return 200 to prevent QiCard from retrying repeatedly
             return response()->json([
                 'success' => false,
                 'message' => 'Webhook processing failed',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 200);
         }
     }
 

@@ -247,42 +247,70 @@ class QiCardPaymentService
     public function handleCallback(array $callbackData): Payment
     {
         try {
-            // QiCard Iraq sends orderId in callback
-            $transactionId = $callbackData['orderId'] ?? $callbackData['transaction_id'] ?? $callbackData['id'] ?? null;
+            Log::info('Processing callback in service', ['callback_data' => $callbackData]);
+            
+            // QiCard Iraq can send different field names for transaction ID
+            // Try multiple possible field names
+            $transactionId = $callbackData['orderId'] 
+                ?? $callbackData['paymentId'] 
+                ?? $callbackData['id'] 
+                ?? $callbackData['transaction_id'] 
+                ?? $callbackData['transactionId']
+                ?? null;
             
             if (!$transactionId) {
-                throw new Exception('Transaction ID not provided in callback');
+                Log::error('Transaction ID not found in callback', ['callback_data' => $callbackData]);
+                throw new Exception('Transaction ID not provided in callback. Received fields: ' . implode(', ', array_keys($callbackData)));
             }
 
-            // Find payment record
-            $payment = Payment::where('transaction_ref', $transactionId)->firstOrFail();
+            Log::info('Looking for payment with transaction_ref', ['transaction_id' => $transactionId]);
 
-            // Update payment status based on callback
-            // QiCard Iraq status values: SUCCESS, FAILED, PENDING, etc.
-            $status = $this->mapPaymentStatus($callbackData['status'] ?? $callbackData['orderStatus'] ?? 'failed');
+            // Find payment record
+            $payment = Payment::where('transaction_ref', $transactionId)->first();
+            
+            if (!$payment) {
+                Log::error('Payment not found for transaction ID', ['transaction_id' => $transactionId]);
+                throw new Exception("Payment not found for transaction ID: {$transactionId}");
+            }
+
+            Log::info('Payment found', ['payment_id' => $payment->id, 'current_status' => $payment->status->value]);
+
+            // QiCard Iraq can send status in different fields
+            $statusString = $callbackData['status'] 
+                ?? $callbackData['orderStatus'] 
+                ?? $callbackData['paymentStatus']
+                ?? $callbackData['state']
+                ?? 'unknown';
+            
+            $status = $this->mapPaymentStatus($statusString);
+            
+            Log::info('Mapped status', ['raw_status' => $statusString, 'mapped_status' => $status->value]);
             
             $payment->update([
                 'status' => $status,
-                'raw_response' => array_merge($payment->raw_response ?? [], $callbackData),
+                'raw_response' => array_merge($payment->raw_response ?? [], [
+                    'webhook_received_at' => now()->toISOString(),
+                    'webhook_data' => $callbackData,
+                ]),
                 'paid_at' => $status === PaymentStatus::COMPLETED ? now() : null,
             ]);
 
+            Log::info('Payment updated', ['payment_id' => $payment->id, 'new_status' => $status->value]);
+
             // Update booking status if payment is completed
             if ($status === PaymentStatus::COMPLETED) {
+                Log::info('Payment completed, updating booking', ['booking_id' => $payment->booking_id]);
                 $this->updateBookingAfterPayment($payment->booking);
                 
                 // Dispatch payment completed event
                 event(new PaymentCompleted($payment));
+                
+                Log::info('Booking updated successfully', ['booking_id' => $payment->booking_id]);
             } elseif ($status === PaymentStatus::FAILED) {
+                Log::info('Payment failed', ['payment_id' => $payment->id]);
                 // Dispatch payment failed event
-                event(new PaymentFailed($payment, $callbackData['failure_reason'] ?? null));
+                event(new PaymentFailed($payment, $callbackData['failure_reason'] ?? $callbackData['failureReason'] ?? null));
             }
-
-            Log::info('Payment callback processed', [
-                'payment_id' => $payment->id,
-                'status' => $status->value,
-                'transaction_id' => $transactionId,
-            ]);
 
             return $payment->fresh();
 
@@ -290,6 +318,7 @@ class QiCardPaymentService
             Log::error('Payment callback processing failed', [
                 'callback_data' => $callbackData,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e;
