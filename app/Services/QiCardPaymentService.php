@@ -109,15 +109,28 @@ class QiCardPaymentService
                     'X-Terminal-Id' => $this->terminalId, // Required by QiCard API
                 ])
                 ->withBasicAuth($this->username, $this->password)
-                ->post($this->apiUrl . 'payment', $paymentData); // Changed from 'purchases' to 'payment'
+                ->post($this->apiUrl . 'payment', $paymentData);
 
             if (!$response->successful()) {
+                $errorBody = $response->body();
+                $statusCode = $response->status();
+                
                 Log::error('QiCard Payment Failed', [
-                    'status' => $response->status(),
-                    'body' => $response->body(),
+                    'status' => $statusCode,
+                    'body' => $errorBody,
                     'headers' => $response->headers(),
+                    'request_url' => $this->apiUrl . 'payment',
+                    'payload' => $paymentData,
                 ]);
-                throw new Exception('QiCard API request failed: ' . $response->body());
+                
+                // Provide user-friendly error messages
+                if ($statusCode === 502 || $statusCode === 503 || $statusCode === 504) {
+                    throw new Exception('QiCard payment gateway is temporarily unavailable. Please try again in a few moments. (Error: ' . $statusCode . ')');
+                } elseif ($statusCode === 401 || $statusCode === 403) {
+                    throw new Exception('Payment gateway authentication failed. Please contact support. (Error: ' . $statusCode . ')');
+                } else {
+                    throw new Exception('Payment gateway error: ' . $errorBody . ' (Status: ' . $statusCode . ')');
+                }
             }
 
             $responseData = $response->json();
