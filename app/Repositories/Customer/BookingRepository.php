@@ -4,6 +4,7 @@ namespace App\Repositories\Customer;
 
 use App\Models\Booking;
 use App\Models\Status;
+use App\Services\ScheduleService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -11,6 +12,10 @@ use Spatie\QueryBuilder\AllowedFilter;
 
 class BookingRepository
 {
+    public function __construct(
+        protected ScheduleService $scheduleService
+    ) {}
+
     /**
      * Get all bookings for a customer with filtering, sorting, and pagination.
      */
@@ -72,13 +77,18 @@ class BookingRepository
     public function create(array $data): Booking
     {
         return DB::transaction(function () use ($data) {
-            // Get venue to calculate price
+            // Get venue to calculate price and duration
             $venue = \App\Models\Venue::findOrFail($data['venue_id']);
             
-            // Calculate total price based on hours
+            // Calculate end_time based on venue's booking_duration_hours
             $startTime = \Carbon\Carbon::parse($data['start_time']);
-            $endTime = \Carbon\Carbon::parse($data['end_time']);
-            $hours = $endTime->diffInHours($startTime);
+            $bookingDuration = $venue->booking_duration_hours ?? 1;
+            $endTime = $startTime->copy()->addHours($bookingDuration);
+            
+            $data['end_time'] = $endTime->format('H:i');
+            
+            // Calculate total price based on duration
+            $hours = $bookingDuration;
             
             // Use price_per_hour if available, otherwise use base_price, or default to 0
             if ($venue->price_per_hour) {
@@ -122,15 +132,40 @@ class BookingRepository
     }
 
     /**
-     * Check if time slot is available.
+     * Check if time slot is available for booking.
+     * Now validates against venue schedules and existing bookings.
      */
     public function isTimeSlotAvailable(
         int $venueId,
         string $date,
         string $startTime,
-        string $endTime,
         ?int $excludeBookingId = null
-    ): bool {
+    ): array {
+        $venue = \App\Models\Venue::with('schedules')->findOrFail($venueId);
+        
+        // Calculate end time based on venue's booking duration
+        $bookingDuration = $venue->booking_duration_hours ?? 1;
+        $start = \Carbon\Carbon::parse($startTime);
+        $end = $start->copy()->addHours($bookingDuration);
+        $endTime = $end->format('H:i');
+        
+        // Check if time slot is within venue's schedule
+        $isWithinSchedule = $this->scheduleService->isTimeSlotAvailable(
+            $venue,
+            $date,
+            $startTime,
+            $bookingDuration
+        );
+        
+        if (!$isWithinSchedule) {
+            return [
+                'available' => false,
+                'reason' => 'Time slot is outside venue operating hours',
+                'end_time' => $endTime,
+            ];
+        }
+        
+        // Check for booking conflicts
         $query = Booking::where('venue_id', $venueId)
             ->where('booking_date', $date)
             ->whereHas('status', function ($q) {
@@ -149,7 +184,27 @@ class BookingRepository
             $query->where('id', '!=', $excludeBookingId);
         }
 
-        return !$query->exists();
+        $hasConflict = $query->exists();
+        
+        if ($hasConflict) {
+            $conflictingBooking = $query->first();
+            return [
+                'available' => false,
+                'reason' => 'Time slot is already booked',
+                'end_time' => $endTime,
+                'conflicting_booking' => [
+                    'id' => $conflictingBooking->id,
+                    'start_time' => $conflictingBooking->start_time,
+                    'end_time' => $conflictingBooking->end_time,
+                ],
+            ];
+        }
+
+        return [
+            'available' => true,
+            'end_time' => $endTime,
+            'duration_hours' => $bookingDuration,
+        ];
     }
 
     /**

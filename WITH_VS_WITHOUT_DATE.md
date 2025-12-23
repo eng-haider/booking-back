@@ -9,11 +9,13 @@
 ## Without Date Parameter ❌
 
 ### Request:
+
 ```bash
 GET /api/customer/venues/1/available-time-periods
 ```
 
 ### Response:
+
 ```json
 {
   "success": true,
@@ -60,6 +62,7 @@ GET /api/customer/venues/1/available-time-periods
 ```
 
 ### Problems:
+
 - ❌ Shows all 7 days (customer only cares about Saturday)
 - ❌ Doesn't show which slots are actually booked
 - ❌ Customer might try to book an unavailable slot
@@ -71,11 +74,13 @@ GET /api/customer/venues/1/available-time-periods
 ## With Date Parameter ✅
 
 ### Request:
+
 ```bash
 GET /api/customer/venues/1/available-time-periods?date=2025-12-28
 ```
 
 ### Response:
+
 ```json
 {
   "success": true,
@@ -123,6 +128,7 @@ GET /api/customer/venues/1/available-time-periods?date=2025-12-28
 ```
 
 ### Benefits:
+
 - ✅ Shows only the requested day
 - ✅ Each slot marked as available/unavailable
 - ✅ Shows existing bookings clearly
@@ -135,6 +141,7 @@ GET /api/customer/venues/1/available-time-periods?date=2025-12-28
 ## Visual Comparison
 
 ### Without Date - Customer sees:
+
 ```
 ┌─────────────────────────────────────┐
 │ Venue: Grand Event Hall             │
@@ -149,9 +156,11 @@ GET /api/customer/venues/1/available-time-periods?date=2025-12-28
 │ Sunday: Closed                      │
 └─────────────────────────────────────┘
 ```
+
 **Customer thinks:** "I want Saturday... which slots are free? 🤔"
 
 ### With Date - Customer sees:
+
 ```
 ┌─────────────────────────────────────┐
 │ Saturday, December 28, 2025         │
@@ -161,6 +170,7 @@ GET /api/customer/venues/1/available-time-periods?date=2025-12-28
 │ ✅ 19:00 - 23:00 (Available)        │
 └─────────────────────────────────────┘
 ```
+
 **Customer thinks:** "Perfect! I'll book 10:00-14:00 ✨"
 
 ---
@@ -168,9 +178,11 @@ GET /api/customer/venues/1/available-time-periods?date=2025-12-28
 ## Real-World Use Cases
 
 ### Use Case 1: Event Planner
+
 **Scenario:** Planning a wedding, needs to compare 3 potential dates
 
 **Without date:**
+
 ```javascript
 // Must fetch full schedule, then check each date manually
 const schedule = await getSchedule(venueId);
@@ -182,6 +194,7 @@ const bookings3 = await getBookings(venueId, date3);
 ```
 
 **With date:**
+
 ```javascript
 // Clean, simple comparison
 const availability1 = await getAvailability(venueId, date1);
@@ -195,6 +208,7 @@ const availability3 = await getAvailability(venueId, date3);
 ### Use Case 2: Mobile App Calendar
 
 **Without date:**
+
 ```
 User opens calendar
   ↓
@@ -210,6 +224,7 @@ Show available times
 ```
 
 **With date:**
+
 ```
 User opens calendar
   ↓
@@ -224,26 +239,28 @@ Show available times immediately ✨
 
 ## Performance Comparison
 
-| Metric | Without Date | With Date |
-|--------|-------------|-----------|
-| Days returned | 7 | 1 |
-| Database queries | 1 (schedules) | 2 (schedules + bookings) |
-| Response size | ~3-5 KB | ~0.5-1 KB |
-| Frontend processing | High (must filter & check) | Low (already filtered) |
-| User confusion | Medium | None |
-| Booking errors | Possible | Prevented |
+| Metric              | Without Date               | With Date                |
+| ------------------- | -------------------------- | ------------------------ |
+| Days returned       | 7                          | 1                        |
+| Database queries    | 1 (schedules)              | 2 (schedules + bookings) |
+| Response size       | ~3-5 KB                    | ~0.5-1 KB                |
+| Frontend processing | High (must filter & check) | Low (already filtered)   |
+| User confusion      | Medium                     | None                     |
+| Booking errors      | Possible                   | Prevented                |
 
 ---
 
 ## When to Use Each
 
 ### Use Without Date When:
+
 - 📅 Showing general venue information
 - 📋 Displaying weekly operating hours
 - 🔍 SEO/static content pages
 - 📱 Initial venue browse (no date selected yet)
 
 ### Use With Date When:
+
 - ✅ User has selected a specific date
 - 📆 Showing booking calendar
 - 🎯 Creating a new booking
@@ -255,25 +272,26 @@ Show available times immediately ✨
 ## Code Examples
 
 ### Frontend: Smart Date Handling
+
 ```javascript
 function VenueBooking({ venueId, selectedDate }) {
   const [availability, setAvailability] = useState(null);
-  
+
   useEffect(() => {
-    const url = selectedDate 
+    const url = selectedDate
       ? `/api/customer/venues/${venueId}/available-time-periods?date=${selectedDate}`
       : `/api/customer/venues/${venueId}/available-time-periods`;
-    
+
     fetch(url)
-      .then(res => res.json())
-      .then(data => setAvailability(data.data.available_time_periods));
+      .then((res) => res.json())
+      .then((data) => setAvailability(data.data.available_time_periods));
   }, [venueId, selectedDate]);
-  
+
   // If no date selected, show weekly view
   if (!selectedDate) {
     return <WeeklySchedule availability={availability} />;
   }
-  
+
   // If date selected, show that day's real availability
   return <DayView availability={availability} />;
 }
@@ -283,18 +301,19 @@ function VenueBooking({ venueId, selectedDate }) {
 
 ## Summary
 
-| Feature | Without Date | With Date |
-|---------|-------------|-----------|
-| **Use Case** | Browse/Overview | Book/Reserve |
-| **Data** | All 7 days | One day only |
-| **Availability** | Theoretical | Real-time |
-| **Bookings** | Not shown | Shown |
-| **is_available flag** | ❌ No | ✅ Yes |
-| **Best for** | Discovery | Decision |
+| Feature               | Without Date    | With Date    |
+| --------------------- | --------------- | ------------ |
+| **Use Case**          | Browse/Overview | Book/Reserve |
+| **Data**              | All 7 days      | One day only |
+| **Availability**      | Theoretical     | Real-time    |
+| **Bookings**          | Not shown       | Shown        |
+| **is_available flag** | ❌ No           | ✅ Yes       |
+| **Best for**          | Discovery       | Decision     |
 
 ---
 
-**Recommendation:** 
+**Recommendation:**
+
 - Use **without date** for venue discovery and general browsing
 - Use **with date** when user is ready to book or comparing specific dates
 

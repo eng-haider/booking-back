@@ -50,21 +50,25 @@ class BookingController extends Controller
             $data = $request->validated();
             $data['customer_id'] = $customer->id;
 
-            // Check availability
-            $isAvailable = $this->bookingRepository->isTimeSlotAvailable(
+            // Check availability using the new schedule-aware system
+            $availability = $this->bookingRepository->isTimeSlotAvailable(
                 $data['venue_id'],
                 $data['booking_date'],
-                $data['start_time'],
-                $data['end_time']
+                $data['start_time']
             );
 
-            if (!$isAvailable) {
+            if (!$availability['available']) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Time slot is not available',
+                    'message' => $availability['reason'],
+                    'data' => [
+                        'end_time' => $availability['end_time'] ?? null,
+                        'conflicting_booking' => $availability['conflicting_booking'] ?? null,
+                    ],
                 ], 422);
             }
 
+            // Create the booking (end_time is calculated automatically)
             $booking = $this->bookingRepository->create($data);
 
             return response()->json([
