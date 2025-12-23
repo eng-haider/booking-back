@@ -19,9 +19,9 @@ class VenueRepository
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('provider_id'),
                 AllowedFilter::exact('venue_type_id'),
-                AllowedFilter::exact('country_id'),
                 AllowedFilter::partial('name'),
-                AllowedFilter::partial('city'),
+                AllowedFilter::partial('category_id'),
+                AllowedFilter::exact('provider.governorate_id'),
                 AllowedFilter::scope('featured'),
             ])
             ->allowedSorts([
