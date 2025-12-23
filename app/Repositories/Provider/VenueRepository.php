@@ -61,7 +61,10 @@ class VenueRepository
     {
         // Generate slug if not provided
         if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['name']);
+            // Generate slug from category name or use a unique identifier
+            $category = \App\Models\Category::find($data['category_id']);
+            $baseSlug = $category ? Str::slug($category->name) : 'venue';
+            $data['slug'] = $baseSlug . '-' . uniqid();
         }
 
         // Ensure unique slug
