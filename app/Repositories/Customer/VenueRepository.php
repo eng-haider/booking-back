@@ -36,12 +36,13 @@ class VenueRepository
                 'provider',
                 'venueType',
                 'country',
+                'category',
                 'resources',
                 'amenities',
                 'photos',
                 'schedules',
                 'reviews',
-            'reviews.customer'
+                'reviews.customer'
             ])
             ->where('status', 'active')
             ->defaultSort('-created_at')
