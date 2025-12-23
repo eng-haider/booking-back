@@ -3,6 +3,7 @@
 namespace App\Repositories\Provider;
 
 use App\Models\Venue;
+use App\Services\ScheduleService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
@@ -12,6 +13,10 @@ use Spatie\QueryBuilder\AllowedSort;
 
 class VenueRepository
 {
+    public function __construct(
+        protected ScheduleService $scheduleService
+    ) {}
+
     /**
      * Get all venues for a provider
      */
@@ -148,5 +153,32 @@ class VenueRepository
             'average_rating' => $venue->reviews()->avg('rating') ?? 0,
             'total_reviews' => $venue->reviews()->count(),
         ];
+    }
+
+    /**
+     * Create schedules for a venue.
+     * 
+     * @param Venue $venue
+     * @param array|null $scheduleData
+     * @return \Illuminate\Support\Collection
+     */
+    public function createSchedules(Venue $venue, ?array $scheduleData = null): \Illuminate\Support\Collection
+    {
+        if ($scheduleData && !empty($scheduleData)) {
+            return $this->scheduleService->createSchedulesForVenue($venue, $scheduleData);
+        }
+
+        return $this->scheduleService->createDefaultSchedule($venue);
+    }
+
+    /**
+     * Get available time periods for the venue.
+     * 
+     * @param Venue $venue
+     * @return array
+     */
+    public function getAvailableTimePeriods(Venue $venue): array
+    {
+        return $this->scheduleService->getAllAvailableTimePeriods($venue);
     }
 }

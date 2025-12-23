@@ -50,6 +50,7 @@ Route::middleware(['auth:provider', 'provider'])->group(function () {
         Route::delete('/{id}', [VenueController::class, 'destroy']);
         Route::patch('/{id}/status', [VenueController::class, 'updateStatus']);
         Route::get('/{id}/statistics', [VenueController::class, 'statistics']);
+        Route::get('/{id}/available-time-periods', [VenueController::class, 'availableTimePeriods']);
         
         // Photo Management
         Route::post('/{id}/photos', [VenueController::class, 'uploadPhoto']);

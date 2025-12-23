@@ -51,7 +51,16 @@ class VenueController extends Controller
         // Set provider_id from authenticated user
         $data['provider_id'] = $provider->id;
 
+        // Set default booking duration if not provided
+        if (!isset($data['booking_duration_hours'])) {
+            $data['booking_duration_hours'] = 1;
+        }
+
         $venue = $this->venueRepository->create($data);
+
+        // Create schedules for the venue
+        $scheduleData = $data['schedules'] ?? null;
+        $this->venueRepository->createSchedules($venue, $scheduleData);
 
         // Sync amenities if provided (accept both 'amenities' and 'amenity_ids')
         $amenityIds = $data['amenity_ids'] ?? $data['amenities'] ?? null;
@@ -64,10 +73,17 @@ class VenueController extends Controller
             $this->handlePhotoUploads($request->file('photos'), $venue);
         }
 
+        // Load relationships and get available time periods
+        $venue->load(['amenities', 'photos', 'schedules']);
+        $availableTimePeriods = $this->venueRepository->getAvailableTimePeriods($venue);
+
         return response()->json([
             'success' => true,
             'message' => 'Venue created successfully',
-            'data' => $venue->load(['amenities', 'photos']),
+            'data' => [
+                'venue' => $venue,
+                'available_time_periods' => $availableTimePeriods,
+            ],
         ], 201);
     }
 
@@ -224,6 +240,36 @@ class VenueController extends Controller
         return response()->json([
             'success' => true,
             'data' => $statistics,
+        ]);
+    }
+
+    /**
+     * Get available time periods for a venue.
+     */
+    public function availableTimePeriods(Request $request, int $id): JsonResponse
+    {
+        $provider = $request->user()->provider;
+        
+        $venue = $this->venueRepository->findByIdForProvider($id, $provider->id, ['schedules']);
+
+        if (!$venue) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Venue not found',
+            ], 404);
+        }
+
+        $availableTimePeriods = $this->venueRepository->getAvailableTimePeriods($venue);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'venue_id' => $venue->id,
+                'venue_name' => $venue->name,
+                'booking_duration_hours' => $venue->booking_duration_hours,
+                'buffer_minutes' => $venue->buffer_minutes,
+                'available_time_periods' => $availableTimePeriods,
+            ],
         ]);
     }
 

@@ -25,6 +25,7 @@ class Venue extends Model
         'currency',
         'status',
         'buffer_minutes',
+        'booking_duration_hours',
         'timezone',
     ];
 
@@ -35,6 +36,7 @@ class Venue extends Model
             'capacity' => 'integer',
             'base_price' => 'decimal:2',
             'buffer_minutes' => 'integer',
+            'booking_duration_hours' => 'integer',
             'status' => VenueStatus::class,
         ];
     }

@@ -26,6 +26,7 @@ class StoreVenueRequest extends FormRequest
             'base_price' => ['nullable', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'max:3'],
             'buffer_minutes' => ['nullable', 'integer', 'min:0'],
+            'booking_duration_hours' => ['nullable', 'integer', 'min:1', 'max:24'],
             'timezone' => ['nullable', 'string', 'max:50'],
             'amenity_ids' => ['nullable', 'array'],
             'amenity_ids.*' => ['integer', 'exists:amenities,id'],
@@ -33,6 +34,11 @@ class StoreVenueRequest extends FormRequest
             'amenities.*' => ['integer', 'exists:amenities,id'],
             'photos' => ['nullable', 'array', 'max:10'],
             'photos.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'schedules' => ['nullable', 'array', 'min:1', 'max:7'],
+            'schedules.*.day_of_week' => ['required_with:schedules', 'integer', 'min:0', 'max:6'],
+            'schedules.*.open_time' => ['required_unless:schedules.*.is_closed,true', 'date_format:H:i'],
+            'schedules.*.close_time' => ['required_unless:schedules.*.is_closed,true', 'date_format:H:i', 'after:schedules.*.open_time'],
+            'schedules.*.is_closed' => ['nullable', 'boolean'],
         ];
     }
 
@@ -49,10 +55,18 @@ class StoreVenueRequest extends FormRequest
             'base_price.min' => 'Base price must be at least 0',
             'currency.max' => 'Currency code must be 3 characters',
             'buffer_minutes.min' => 'Buffer minutes must be at least 0',
+            'booking_duration_hours.min' => 'Booking duration must be at least 1 hour',
+            'booking_duration_hours.max' => 'Booking duration cannot exceed 24 hours',
             'amenity_ids.*.exists' => 'One or more amenities do not exist',
             'photos.max' => 'Maximum 10 photos allowed',
             'photos.*.image' => 'File must be an image',
             'photos.*.max' => 'Photo size must not exceed 5MB',
+            'schedules.*.day_of_week.required_with' => 'Day of week is required for each schedule',
+            'schedules.*.day_of_week.min' => 'Day of week must be between 0 (Sunday) and 6 (Saturday)',
+            'schedules.*.day_of_week.max' => 'Day of week must be between 0 (Sunday) and 6 (Saturday)',
+            'schedules.*.open_time.required_unless' => 'Open time is required unless the day is marked as closed',
+            'schedules.*.close_time.required_unless' => 'Close time is required unless the day is marked as closed',
+            'schedules.*.close_time.after' => 'Close time must be after open time',
         ];
     }
 }
