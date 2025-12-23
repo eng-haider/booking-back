@@ -490,13 +490,25 @@ class QiCardPaymentService
     protected function updateBookingAfterPayment(Booking $booking): void
     {
         // Update booking status to confirmed if payment is successful
-        // You can customize this based on your business logic
-        $booking->update([
-            'payment_status' => PaymentStatus::COMPLETED,
-        ]);
+        // Find confirmed status
+        $confirmedStatus = \App\Models\Status::where('slug', 'confirmed')->first();
+        
+        $updateData = [
+            'payment_status' => PaymentStatus::COMPLETED->value,
+        ];
+        
+        // Update booking status to confirmed if status exists
+        if ($confirmedStatus) {
+            $updateData['status_id'] = $confirmedStatus->id;
+            $updateData['confirmed_at'] = now();
+        }
+        
+        $booking->update($updateData);
 
         Log::info('Booking updated after payment', [
             'booking_id' => $booking->id,
+            'payment_status' => 'completed',
+            'booking_status' => $confirmedStatus ? 'confirmed' : 'unchanged',
         ]);
     }
 
