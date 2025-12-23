@@ -76,6 +76,7 @@ class QiCardPaymentService
             
             // QiCard Iraq API structure
             // Required: requestId, amount, currency
+            // Optional: notificationUrl (webhook URL)
             // Terminal ID goes in X-Terminal-Id header
             $paymentData = [
                 'requestId' => $requestId, // REQUIRED by QiCard API
@@ -84,6 +85,7 @@ class QiCardPaymentService
                 'merchantOrderId' => $orderId,
                 'description' => $this->generateDescription($booking),
                 'returnUrl' => $additionalData['return_url'] ?? route('customer.payment.callback'),
+                'notificationUrl' => config('services.qicard.webhook_url') ?? route('customer.payment.webhook'), // Webhook URL for status updates
             ];
 
             // Create payment record
@@ -91,7 +93,7 @@ class QiCardPaymentService
 
             // Log the request for debugging
             Log::info('QiCard Payment Request', [
-                'url' => $this->apiUrl . 'purchases',
+                'url' => $this->apiUrl . 'payment',
                 'terminal_id' => $this->terminalId,
                 'username' => $this->username,
                 'payload' => $paymentData,

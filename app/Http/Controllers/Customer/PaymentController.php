@@ -190,6 +190,7 @@ class PaymentController extends Controller
                 'raw_body' => $request->getContent(),
                 'ip' => $request->ip(),
                 'timestamp' => now()->toISOString(),
+                'x_signature' => $request->header('X-Signature'),
             ]);
 
             $webhookData = $request->all();
@@ -198,25 +199,36 @@ class PaymentController extends Controller
             if (empty($webhookData)) {
                 Log::warning('Webhook received with empty data');
                 return response()->json([
-                    'success' => false,
+                    'success' => true,
                     'message' => 'Empty webhook data',
-                ], 400);
+                ], 200); // Return 200 to prevent retries
             }
 
-            // Process callback
+            // Verify signature if enabled (optional based on config)
+            $signature = $request->header('X-Signature');
+            if ($signature && config('services.qicard.verify_webhooks', false)) {
+                Log::info('Webhook signature verification enabled', ['signature' => $signature]);
+                // TODO: Implement signature verification using QiCard's RSA public key
+                // For now, we'll skip verification but log the signature
+            }
+
+            // Process callback with the webhook data
+            // QiCard sends: paymentId, status, amount, confirmedAmount, etc.
             $payment = $this->paymentService->handleCallback($webhookData);
 
             Log::info('=== Webhook Processed Successfully ===', [
                 'payment_id' => $payment->id,
                 'status' => $payment->status->value,
                 'booking_id' => $payment->booking_id,
+                'qicard_status' => $webhookData['status'] ?? 'unknown',
             ]);
 
+            // MUST return 200 OK or QiCard will retry
             return response()->json([
                 'success' => true,
                 'message' => 'Webhook processed successfully',
                 'payment_id' => $payment->id,
-            ]);
+            ], 200);
 
         } catch (Exception $e) {
             Log::error('=== Webhook Processing Failed ===', [
@@ -226,10 +238,11 @@ class PaymentController extends Controller
             ]);
 
             // Still return 200 to prevent QiCard from retrying repeatedly
+            // Log the error but acknowledge receipt
             return response()->json([
-                'success' => false,
-                'message' => 'Webhook processing failed',
-                'error' => $e->getMessage(),
+                'success' => true,
+                'message' => 'Webhook received but processing failed',
+                'error' => config('app.debug') ? $e->getMessage() : 'Processing error',
             ], 200);
         }
     }
