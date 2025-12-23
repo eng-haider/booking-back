@@ -87,8 +87,9 @@ class QiCardPaymentService
                 'amount' => $this->formatAmount($booking->total_price),
                 'currency' => $this->currency,
                 'merchantOrderId' => $orderId,
+                 "finishPaymentUrl"=> $this->returnUrl,
                 'description' => $this->generateDescription($booking),
-                'returnUrl' => 'www.facebook.com', // From config/env
+                'returnUrl' => $this->returnUrl, // From config/env
                 'notificationUrl' => config('services.qicard.webhook_url'), // Webhook URL for status updates
             ];
 
