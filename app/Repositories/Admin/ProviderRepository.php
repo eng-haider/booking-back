@@ -71,9 +71,9 @@ class ProviderRepository
             // Create user account first
             $user = User::create([
                 'name' => $data['name'],
-                'email' => $data['email'],
+                // 'email' => $data['email'],
                 'phone' => $data['phone'],
-                'password' => Hash::make($data['password']),
+                // 'password' => Hash::make($data['password']),
                 'role' => 'owner',
             ]);
 
