@@ -68,17 +68,16 @@ class ProviderRepository
     public function create(array $data): Provider
     {
         return DB::transaction(function () use ($data) {
-            // Create user account first
+            // Create user account first (without Spatie roles to avoid guard conflicts)
             $user = User::create([
                 'name' => $data['name'],
-                // 'email' => $data['email'],
                 'phone' => $data['phone'],
-                // 'password' => Hash::make($data['password']),
-                'role' => 'owner',
+                'role' => 'owner', // Simple role field in users table
             ]);
 
-            // Assign provider/owner role using Spatie (web guard for users table)
-            $user->assignRole('owner', 'web');
+            // Don't use assignRole here to avoid guard context issues
+            // The 'role' field in users table is sufficient for basic role tracking
+            // If you need Spatie roles, assign them when user logs in with their guard
 
             // Create provider with the new user_id
             $provider = Provider::create([
@@ -86,7 +85,7 @@ class ProviderRepository
                 'name' => $data['provider_name'] ?? $data['name'],
                 'slug' => $data['slug'] ?? null,
                 'description' => $data['description'] ?? null,
-                'email' => $data['provider_email'] ?? $data['email'],
+                'email' => $data['provider_email'] ?? $data['email'] ?? null,
                 'phone' => $data['provider_phone'] ?? $data['phone'],
                 'address' => $data['address'] ?? null,
                 'governorate_id' => $data['governorate_id'] ?? null,
