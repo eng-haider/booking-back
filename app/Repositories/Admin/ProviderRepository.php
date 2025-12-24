@@ -71,12 +71,14 @@ class ProviderRepository
             // Create user account first
             $user = User::create([
                 'name' => $data['name'],
+                'email' => $data['email'],
                 'phone' => $data['phone'],
-                'role' => 'owner', // or whatever role you use for providers
+                'password' => Hash::make($data['password']),
+                'role' => 'owner',
             ]);
 
-            // Assign provider/owner role using Spatie
-            $user->assignRole('owner');
+            // Assign provider/owner role using Spatie (web guard for users table)
+            $user->assignRole('owner', 'web');
 
             // Create provider with the new user_id
             $provider = Provider::create([
