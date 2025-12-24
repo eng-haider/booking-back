@@ -3,8 +3,11 @@
 namespace App\Repositories\Admin;
 
 use App\Models\Provider;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -60,11 +63,42 @@ class ProviderRepository
     }
 
     /**
-     * Create a new provider.
+     * Create a new provider along with user account.
      */
     public function create(array $data): Provider
     {
-        return Provider::create($data);
+        return DB::transaction(function () use ($data) {
+            // Create user account first
+            $user = User::create([
+                'name' => $data['name'],
+                'phone' => $data['phone'],
+                'role' => 'owner', // or whatever role you use for providers
+            ]);
+
+            // Assign provider/owner role using Spatie
+            $user->assignRole('owner');
+
+            // Create provider with the new user_id
+            $provider = Provider::create([
+                'user_id' => $user->id,
+                'name' => $data['provider_name'] ?? $data['name'],
+                'slug' => $data['slug'] ?? null,
+                'description' => $data['description'] ?? null,
+                'email' => $data['provider_email'] ?? $data['email'],
+                'phone' => $data['provider_phone'] ?? $data['phone'],
+                'address' => $data['address'] ?? null,
+                'governorate_id' => $data['governorate_id'] ?? null,
+                'lat' => $data['lat'] ?? null,
+                'lng' => $data['lng'] ?? null,
+                'website' => $data['website'] ?? null,
+                'logo' => $data['logo'] ?? null,
+                'license_number' => $data['license_number'] ?? null,
+                'status' => $data['status'] ?? 'active',
+                'settings' => $data['settings'] ?? null,
+            ]);
+
+            return $provider->load('user');
+        });
     }
 
     /**

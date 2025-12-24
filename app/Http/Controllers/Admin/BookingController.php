@@ -44,12 +44,18 @@ class BookingController extends Controller
     {
         $data = $request->validated();
 
+        // Get venue to calculate end_time for availability check
+        $venue = \App\Models\Venue::findOrFail($data['venue_id']);
+        $bookingDuration = $venue->booking_duration_hours ?? 1;
+        $startTime = \Carbon\Carbon::parse($data['start_time']);
+        $endTime = $startTime->copy()->addHours($bookingDuration)->format('H:i:s');
+
         // Check if time slot is available
         if (!$this->bookingRepository->isTimeSlotAvailable(
-            $data['resource_id'],
+            $data['venue_id'],
             $data['booking_date'],
             $data['start_time'],
-            $data['end_time']
+            $endTime
         )) {
             return response()->json([
                 'success' => false,
@@ -57,9 +63,7 @@ class BookingController extends Controller
             ], 422);
         }
 
-        // Generate booking reference
-        $data['booking_reference'] = $this->bookingRepository->generateReference();
-
+        // Create booking (end_time and total_price calculated automatically in repository)
         $booking = $this->bookingRepository->create($data);
 
         return response()->json([
@@ -118,18 +122,22 @@ class BookingController extends Controller
 
         // Check if time slot is available (if time/date changed)
         if (
-            isset($data['resource_id']) || 
+            isset($data['venue_id']) || 
             isset($data['booking_date']) || 
-            isset($data['start_time']) || 
-            isset($data['end_time'])
+            isset($data['start_time'])
         ) {
-            $resourceId = $data['resource_id'] ?? $booking->resource_id;
+            $venueId = $data['venue_id'] ?? $booking->venue_id;
             $date = $data['booking_date'] ?? $booking->booking_date;
             $startTime = $data['start_time'] ?? $booking->start_time;
-            $endTime = $data['end_time'] ?? $booking->end_time;
+            
+            // Get venue to calculate end_time
+            $venue = \App\Models\Venue::findOrFail($venueId);
+            $bookingDuration = $venue->booking_duration_hours ?? 1;
+            $start = \Carbon\Carbon::parse($startTime);
+            $endTime = $start->copy()->addHours($bookingDuration)->format('H:i:s');
 
             if (!$this->bookingRepository->isTimeSlotAvailable(
-                $resourceId,
+                $venueId,
                 $date,
                 $startTime,
                 $endTime,
@@ -140,6 +148,9 @@ class BookingController extends Controller
                     'message' => 'Time slot is not available',
                 ], 422);
             }
+            
+            // Update end_time in data
+            $data['end_time'] = $endTime;
         }
 
         $this->bookingRepository->update($booking, $data);
@@ -388,23 +399,30 @@ class BookingController extends Controller
     public function checkAvailability(Request $request): JsonResponse
     {
         $request->validate([
-            'resource_id' => 'required|integer|exists:resources,id',
+            'venue_id' => 'required|integer|exists:venues,id',
             'booking_date' => 'required|date',
             'start_time' => 'required|date_format:H:i:s',
-            'end_time' => 'required|date_format:H:i:s|after:start_time',
         ]);
 
+        // Get venue to calculate end_time
+        $venue = \App\Models\Venue::findOrFail($request->venue_id);
+        $bookingDuration = $venue->booking_duration_hours ?? 1;
+        $startTime = \Carbon\Carbon::parse($request->start_time);
+        $endTime = $startTime->copy()->addHours($bookingDuration)->format('H:i:s');
+
         $isAvailable = $this->bookingRepository->isTimeSlotAvailable(
-            $request->resource_id,
+            $request->venue_id,
             $request->booking_date,
             $request->start_time,
-            $request->end_time
+            $endTime
         );
 
         return response()->json([
             'success' => true,
             'data' => [
                 'available' => $isAvailable,
+                'booking_duration_hours' => $bookingDuration,
+                'calculated_end_time' => $endTime,
             ],
         ]);
     }

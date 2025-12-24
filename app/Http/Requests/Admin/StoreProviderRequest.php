@@ -20,15 +20,22 @@ class StoreProviderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+            // User fields
             'name' => ['required', 'string', 'max:255'],
+         
+            'phone' => ['required', 'string', 'regex:/^07[0-9]{9}$/', 'unique:users,phone'],
+          
+            
+            // Provider fields
+            'provider_name' => ['nullable', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:providers,slug', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'description' => ['nullable', 'string'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'regex:/^07[0-9]{9}$/'],
+            'provider_email' => ['nullable', 'email', 'max:255'],
+            'provider_phone' => ['nullable', 'string', 'regex:/^07[0-9]{9}$/'],
             'address' => ['nullable', 'string', 'max:500'],
-            'city' => ['nullable', 'string', 'max:100'],
-            'country' => ['nullable', 'string', 'max:100'],
+            'governorate_id' => ['nullable', 'integer', 'exists:governorates,id'],
+            'lat' => ['nullable', 'numeric'],
+            'lng' => ['nullable', 'numeric'],
             'website' => ['nullable', 'url', 'max:255'],
             'logo' => ['nullable', 'string', 'max:255'],
             'license_number' => ['nullable', 'string', 'max:100'],
