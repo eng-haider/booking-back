@@ -15,7 +15,7 @@ class ProviderController extends Controller
         protected ProviderRepository $providerRepository
     ) {
         $this->middleware(['permission:view providers'])->only(['index', 'show', 'statistics']);
-        $this->middleware(['permission:create providers'])->only(['store']);
+        // $this->middleware(['permission:create providers'])->only(['store']);
         $this->middleware(['permission:edit providers'])->only(['update', 'updateStatus']);
         $this->middleware(['permission:delete providers'])->only(['destroy']);
     }

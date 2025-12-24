@@ -1,12 +1,15 @@
 # Admin Booking System Update
 
 ## Summary
+
 Updated the admin booking system to match the customer booking system with automatic calculation of `end_time` and `total_price` based on venue's `booking_duration_hours`.
 
 ## Changes Made
 
 ### 1. StoreBookingRequest.php
+
 **Changed:**
+
 - ❌ Removed `end_time` (required) - now calculated automatically
 - ❌ Removed `resource_id` (required) - simplified to venue-based bookings
 - ❌ Changed `user_id` from required to nullable
@@ -14,6 +17,7 @@ Updated the admin booking system to match the customer booking system with autom
 - ✅ Added `number_of_guests` (optional)
 
 **New Request Structure:**
+
 ```json
 {
   "customer_id": 1,
@@ -30,12 +34,14 @@ Updated the admin booking system to match the customer booking system with autom
 ### 2. BookingRepository.php (Admin)
 
 **Added Imports:**
+
 ```php
 use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 ```
 
 **Updated `create()` Method:**
+
 - Wrapped in database transaction
 - Automatically calculates `end_time` based on venue's `booking_duration_hours`
 - Automatically calculates `total_price` based on:
@@ -46,6 +52,7 @@ use Illuminate\Support\Facades\DB;
 - Generates `booking_reference` if not provided
 
 **Updated `isTimeSlotAvailable()` Method:**
+
 - Changed from `resource_id` to `venue_id`
 - Changed from direct status check to relationship: `whereHas('status')`
 - Fixed SQL error by using proper relationship query
@@ -53,16 +60,19 @@ use Illuminate\Support\Facades\DB;
 ### 3. BookingController.php (Admin)
 
 **Updated `store()` Method:**
+
 - Calculates `end_time` for availability check
 - Uses `venue_id` instead of `resource_id`
 - Passes only `start_time` (end_time calculated in repository)
 
 **Updated `update()` Method:**
+
 - Changed from `resource_id` to `venue_id`
 - Automatically recalculates `end_time` when time/date changes
 - Adds calculated `end_time` to update data
 
 **Updated `checkAvailability()` Method:**
+
 - Changed validation from `resource_id` to `venue_id`
 - Removed `end_time` requirement
 - Calculates `end_time` based on venue
@@ -73,6 +83,7 @@ use Illuminate\Support\Facades\DB;
 ### Creating a Booking
 
 **Step 1: Admin sends minimal data**
+
 ```bash
 POST /api/admin/bookings
 {
@@ -84,6 +95,7 @@ POST /api/admin/bookings
 ```
 
 **Step 2: System automatically:**
+
 1. Fetches venue with `booking_duration_hours` (e.g., 3 hours)
 2. Calculates `end_time` = `14:00:00` + 3 hours = `17:00:00`
 3. Checks if slot `14:00-17:00` is available
@@ -93,6 +105,7 @@ POST /api/admin/bookings
 7. Creates booking in database
 
 **Step 3: Response includes calculated values**
+
 ```json
 {
   "success": true,
@@ -102,7 +115,7 @@ POST /api/admin/bookings
     "venue_id": 5,
     "start_time": "14:00:00",
     "end_time": "17:00:00",
-    "total_price": 150.00,
+    "total_price": 150.0,
     "booking_reference": "BKG-20250115-ABCD1234"
   }
 }
@@ -111,6 +124,7 @@ POST /api/admin/bookings
 ### Checking Availability
 
 **Request:**
+
 ```bash
 POST /api/admin/bookings/check-availability
 {
@@ -121,6 +135,7 @@ POST /api/admin/bookings/check-availability
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
