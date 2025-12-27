@@ -20,7 +20,7 @@ class StoreBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => ['required', 'integer', 'exists:customers,id'],
+            'customer_id' => ['nullable', 'integer', 'exists:customers,id'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
             'venue_id' => ['required', 'integer', 'exists:venues,id'],
             'resource_id' => ['nullable', 'integer', 'exists:resources,id'],
@@ -41,7 +41,6 @@ class StoreBookingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'customer_id.required' => 'Customer is required',
             'customer_id.exists' => 'Customer does not exist',
             'user_id.exists' => 'User does not exist',
             'venue_id.required' => 'Venue is required',
