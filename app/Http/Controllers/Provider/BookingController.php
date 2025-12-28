@@ -14,7 +14,7 @@ class BookingController extends Controller
         protected BookingRepository $bookingRepository
     ) {
         $this->middleware(['permission:manage own bookings'])->only(['index', 'show', 'upcoming', 'past', 'statistics']);
-        $this->middleware(['permission:create bookings'])->only(['store']);
+        // $this->middleware(['permission:create bookings'])->only(['store']);
         $this->middleware(['permission:confirm bookings'])->only(['confirm']);
         $this->middleware(['permission:cancel bookings'])->only(['cancel']);
         $this->middleware(['permission:complete bookings'])->only(['complete']);
