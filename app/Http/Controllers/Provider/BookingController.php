@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Provider\StoreBookingRequest;
 use App\Repositories\Provider\BookingRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class BookingController extends Controller
         protected BookingRepository $bookingRepository
     ) {
         $this->middleware(['permission:manage own bookings'])->only(['index', 'show', 'upcoming', 'past', 'statistics']);
+        $this->middleware(['permission:create bookings'])->only(['store']);
         $this->middleware(['permission:confirm bookings'])->only(['confirm']);
         $this->middleware(['permission:cancel bookings'])->only(['cancel']);
         $this->middleware(['permission:complete bookings'])->only(['complete']);
@@ -34,6 +36,42 @@ class BookingController extends Controller
             'success' => true,
             'data' => $bookings,
         ]);
+    }
+
+    /**
+     * Store a newly created booking.
+     */
+    public function store(StoreBookingRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        // Get venue to calculate end_time for availability check
+        $venue = \App\Models\Venue::findOrFail($data['venue_id']);
+        $bookingDuration = $venue->booking_duration_hours ?? 1;
+        $startTime = \Carbon\Carbon::parse($data['start_time']);
+        $endTime = $startTime->copy()->addHours($bookingDuration)->format('H:i:s');
+
+        // Check if time slot is available
+        if (!$this->bookingRepository->isTimeSlotAvailable(
+            $data['venue_id'],
+            $data['booking_date'],
+            $data['start_time'],
+            $endTime
+        )) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Time slot is not available',
+            ], 422);
+        }
+
+        // Create booking (end_time and total_price calculated automatically in repository)
+        $booking = $this->bookingRepository->create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking created successfully',
+            'data' => $booking->load(['customer', 'venue', 'status']),
+        ], 201);
     }
 
     /**

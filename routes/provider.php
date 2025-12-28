@@ -64,6 +64,7 @@ Route::middleware(['auth:provider', 'provider'])->group(function () {
     // Booking Management
     Route::prefix('bookings')->group(function () {
         Route::get('/', [BookingController::class, 'index']);
+        Route::post('/', [BookingController::class, 'store']);
         Route::get('/statistics', [BookingController::class, 'statistics']);
         Route::get('/upcoming', [BookingController::class, 'upcoming']);
         Route::get('/today', [BookingController::class, 'today']);

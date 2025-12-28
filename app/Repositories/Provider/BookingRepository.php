@@ -3,8 +3,10 @@
 namespace App\Repositories\Provider;
 
 use App\Models\Booking;
+use App\Models\Status;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
@@ -59,6 +61,95 @@ class BookingRepository
             })
             ->with($relations)
             ->find($bookingId);
+    }
+
+    /**
+     * Create a new booking for provider's venue
+     */
+    public function create(array $data): Booking
+    {
+        return DB::transaction(function () use ($data) {
+            // Get venue to calculate price and duration
+            $venue = \App\Models\Venue::findOrFail($data['venue_id']);
+            
+            // Calculate end_time based on venue's booking_duration_hours
+            $startTime = \Carbon\Carbon::parse($data['start_time']);
+            $bookingDuration = $venue->booking_duration_hours ?? 1;
+            $endTime = $startTime->copy()->addHours($bookingDuration);
+            
+            $data['end_time'] = $endTime->format('H:i:s');
+            
+            // Calculate total price if not provided
+            if (!isset($data['total_price'])) {
+                $hours = $bookingDuration;
+                
+                // Use price_per_hour if available, otherwise use base_price, or default to 0
+                if ($venue->price_per_hour) {
+                    $data['total_price'] = $venue->price_per_hour * $hours;
+                } elseif ($venue->base_price) {
+                    $data['total_price'] = $venue->base_price;
+                } else {
+                    $data['total_price'] = 0;
+                }
+            }
+            
+            // Set total_amount (same as total_price for compatibility)
+            $data['total_amount'] = $data['total_price'];
+            
+            // Get pending status
+            $pendingStatus = Status::where('slug', 'pending')->first();
+            if ($pendingStatus) {
+                $data['status_id'] = $pendingStatus->id;
+            }
+            
+            // Generate booking reference
+            $data['booking_reference'] = $this->generateReference();
+
+            return Booking::create($data);
+        });
+    }
+
+    /**
+     * Generate unique booking reference
+     */
+    private function generateReference(): string
+    {
+        do {
+            $reference = 'BKG-' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 8));
+        } while (Booking::where('booking_reference', $reference)->exists());
+
+        return $reference;
+    }
+
+    /**
+     * Check if time slot is available for booking
+     */
+    public function isTimeSlotAvailable(
+        int $venueId,
+        string $date,
+        string $startTime,
+        string $endTime,
+        ?int $excludeBookingId = null
+    ): bool {
+        $query = Booking::where('venue_id', $venueId)
+            ->where('booking_date', $date)
+            ->whereHas('status', function($q) {
+                $q->whereIn('slug', ['pending', 'confirmed']);
+            })
+            ->where(function ($q) use ($startTime, $endTime) {
+                $q->whereBetween('start_time', [$startTime, $endTime])
+                  ->orWhereBetween('end_time', [$startTime, $endTime])
+                  ->orWhere(function ($q2) use ($startTime, $endTime) {
+                      $q2->where('start_time', '<=', $startTime)
+                         ->where('end_time', '>=', $endTime);
+                  });
+            });
+
+        if ($excludeBookingId) {
+            $query->where('id', '!=', $excludeBookingId);
+        }
+
+        return !$query->exists();
     }
 
     /**
