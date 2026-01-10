@@ -24,7 +24,7 @@ class AdminMiddleware
         }
 
         // Check both enum role and Spatie role
-        if ($request->user()->role !== UserRole::ADMIN && !$request->user()->hasRole('admin')) {
+        if ($request->user()->role !== UserRole::ADMIN && !$request->user()->hasRole('super_admin')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized. Admin access required.',

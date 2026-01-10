@@ -27,7 +27,7 @@ Route::prefix('auth')->group(function () {
 });
 
 // Admin routes (protected with auth:admin and admin middleware)
-Route::middleware(['auth:admin', 'admin'])->group(function () {
+Route::middleware(['auth:admin', 'super_admin'])->group(function () {
     
     // Admin Auth Protected Routes
     Route::prefix('auth')->group(function () {
