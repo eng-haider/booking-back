@@ -39,6 +39,7 @@ class VenueRepository
             ])
             ->allowedIncludes([
                 'owner',
+                'provider',
                 'venueType',
                 'country',
                 'category',
