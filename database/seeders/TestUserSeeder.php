@@ -23,23 +23,23 @@ class TestUserSeeder extends Seeder
                 [
                     'name' => 'Admin Test User',
                     'email' => 'admin@test.com',
-                    'role' => 'super_admin',
+                    'role' => 'admin',
                     'password' => Hash::make('password'),
                 ]
             );
             
             // Assign admin role for both web and admin guards
-            if (!$admin->hasRole('super_admin', 'web')) {
-                $admin->assignRole('super_admin'); // web guard (default)
+            if (!$admin->hasRole('admin', 'web')) {
+                $admin->assignRole('admin'); // web guard (default)
             }
-            if (!$admin->hasRole('super_admin', 'super_admin')) {
-                $admin->assignRole(\Spatie\Permission\Models\Role::findByName('super_admin', 'super_admin'));
+            if (!$admin->hasRole('admin', 'admin')) {
+                $admin->assignRole(\Spatie\Permission\Models\Role::findByName('admin', 'admin'));
             }
             
             // Assign all admin permissions
-            $adminPermissions = \Spatie\Permission\Models\Permission::where('guard_name', 'super_admin')->get();
+            $adminPermissions = \Spatie\Permission\Models\Permission::where('guard_name', 'admin')->get();
             foreach ($adminPermissions as $permission) {
-                if (!$admin->hasPermissionTo($permission, 'super_admin')) {
+                if (!$admin->hasPermissionTo($permission, 'admin')) {
                     $admin->givePermissionTo($permission);
                 }
             }

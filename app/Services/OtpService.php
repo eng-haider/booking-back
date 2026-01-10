@@ -15,7 +15,7 @@ class OtpService
     
     // Test user credentials for development
     private const TEST_USERS = [
-        'super_admin' => [
+        'admin' => [
             'phone' => '+9641234567890',
             'otp' => '123456',
         ],

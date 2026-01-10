@@ -46,7 +46,7 @@ return [
             'provider' => 'users',
         ],
 
-        'super_admin' => [
+        'admin' => [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
