@@ -75,6 +75,11 @@ class QiCardPaymentService
     public function initiatePayment(Booking $booking, array $additionalData = []): array
     {
         try {
+            // Validate booking has a valid total price
+            if (empty($booking->total_price) || $booking->total_price <= 0) {
+                throw new Exception('Booking total price must be greater than 0. Current value: ' . ($booking->total_price ?? 'null'));
+            }
+
             $orderId = $this->generateOrderId($booking);
             $requestId = 'REQ-' . $booking->id . '-' . time(); // Unique request ID
             
@@ -450,8 +455,8 @@ class QiCardPaymentService
     }
 
     /**
-     * Format amount for payment gateway
-     *
+     * Format amount for QiCard API
+     * 
      * @param float $amount
      * @return int
      */
@@ -459,7 +464,14 @@ class QiCardPaymentService
     {
         // Convert to smallest currency unit (e.g., cents/fils)
         // For IQD, typically no decimal places
-        return (int) round($amount);
+        $formattedAmount = (int) round($amount);
+        
+        // QiCard requires amount > 0
+        if ($formattedAmount <= 0) {
+            throw new \Exception("Invalid amount: {$amount}. Amount must be greater than 0.");
+        }
+        
+        return $formattedAmount;
     }
 
     /**
