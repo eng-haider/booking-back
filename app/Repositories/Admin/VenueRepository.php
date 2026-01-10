@@ -35,10 +35,10 @@ class VenueRepository
             ->allowedSorts(['id', 'name', 'city', 'rating', 'created_at', 'updated_at'])
             ->allowedIncludes([
                 'owner',
+                'provider',
                 'venueType',
                 'category',
                 'country',
-                'resources',
                 'amenities',
                 'photos',
                 'bookings',
