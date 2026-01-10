@@ -1,6 +1,7 @@
 <?php
 
 // use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\ConfigCheckController;
 use App\Http\Controllers\GovernorateController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,14 @@ use Illuminate\Support\Facades\Route;
 //         Route::get('/me', [AuthController::class, 'me']);
 //     });
 // });
+
+/*
+|--------------------------------------------------------------------------
+| Debug/Config Check Routes (Protected by token)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/config/check-qicard', [ConfigCheckController::class, 'checkQiCard']);
 
 /*
 |--------------------------------------------------------------------------

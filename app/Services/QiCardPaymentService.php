@@ -138,7 +138,9 @@ class QiCardPaymentService
                 if ($statusCode === 502 || $statusCode === 503 || $statusCode === 504) {
                     throw new Exception('QiCard payment gateway is temporarily unavailable. Please try again in a few moments. (Error: ' . $statusCode . ')');
                 } elseif ($statusCode === 401 || $statusCode === 403) {
-                    throw new Exception('Payment gateway authentication failed. Please contact support. (Error: ' . $statusCode . ')');
+                    // Include more details for debugging
+                    $debugInfo = config('app.debug') ? ' | Response: ' . $errorBody : '';
+                    throw new Exception('Payment gateway authentication failed. Please contact support. (Error: ' . $statusCode . ')' . $debugInfo);
                 } else {
                     throw new Exception('Payment gateway error: ' . $errorBody . ' (Status: ' . $statusCode . ')');
                 }
