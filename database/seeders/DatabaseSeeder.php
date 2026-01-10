@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Venue Owner',
             'email' => 'owner@booking.app',
             'phone' => '+1234567891',
-            'role' => 'owner',
+            'role' => 'provider',
         ]);
 
         User::factory()->create([

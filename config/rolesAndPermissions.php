@@ -59,6 +59,10 @@ return [
             'export_data',
         ],
         
+
+              
+    }
+
         'provider' => [
             // Venue permissions (from Provider/VenueController)
             'manage_own_venues',

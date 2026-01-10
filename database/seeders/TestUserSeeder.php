@@ -52,17 +52,17 @@ class TestUserSeeder extends Seeder
                 [
                     'name' => 'Provider Test User',
                     'email' => 'provider@test.com',
-                    'role' => 'owner',
+                    'role' => 'provider',
                     'password' => Hash::make('password'),
                 ]
             );
             
             // Assign owner role for both web and provider guards
-            if (!$providerUser->hasRole('owner', 'web')) {
-                $providerUser->assignRole('owner'); // web guard (default)
+            if (!$providerUser->hasRole('provider', 'web')) {
+                $providerUser->assignRole('provider'); // web guard (default)
             }
-            if (!$providerUser->hasRole('owner', 'provider')) {
-                $providerUser->assignRole(\Spatie\Permission\Models\Role::findByName('owner', 'provider'));
+            if (!$providerUser->hasRole('provider', 'provider')) {
+                $providerUser->assignRole(\Spatie\Permission\Models\Role::findByName('provider', 'provider'));
             }
             
             // Assign all provider permissions

@@ -72,7 +72,7 @@ class ProviderRepository
             $user = User::create([
                 'name' => $data['name'],
                 'phone' => $data['phone'],
-                'role' => 'owner', // Simple role field in users table
+                'role' => 'provider', // Simple role field in users table
             ]);
 
             // Don't use assignRole here to avoid guard context issues
