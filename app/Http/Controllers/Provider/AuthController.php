@@ -155,14 +155,14 @@ class AuthController extends Controller
         $token = JWTAuth::fromUser($user);
 
         // Load provider relationship
-        $user->load('owner');
+        $user->load('provider');
 
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
             'data' => [
                 'user' => $user,
-                'owner' => $user->provider,
+                'provider' => $user->provider,
                 'token' => $token,
                 'token_type' => 'bearer',
                 'expires_in' => (int) config('jwt.ttl') * 60,
@@ -176,13 +176,13 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load('owner');
+        $user = $request->user()->load('provider');
 
         return response()->json([
             'success' => true,
             'data' => [
                 'user' => $user,
-                'owner' => $user->provider,
+                'provider' => $user->provider,
                 'permissions' => $user->getAllPermissions()->pluck('name'),
             ],
         ]);
