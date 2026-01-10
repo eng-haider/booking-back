@@ -14,11 +14,11 @@ class VenueController extends Controller
     public function __construct(
         protected VenueRepository $venueRepository
     ) {
-        // $this->middleware(['permission:view venues'])->only(['index', 'show', 'search', 'featured', 'byCity', 'byProvider', 'byType', 'statistics', 'overallStatistics']);
-        $this->middleware(['permission:create venues'])->only(['store']);
-        $this->middleware(['permission:edit venues'])->only(['update', 'updateStatus', 'syncAmenities']);
-        $this->middleware(['permission:delete venues'])->only(['destroy']);
-        $this->middleware(['permission:feature venues'])->only(['toggleFeatured']);
+        // $this->middleware(['permission:view_venues'])->only(['index', 'show', 'search', 'featured', 'byCity', 'byProvider', 'byType', 'statistics', 'overallStatistics']);
+        $this->middleware(['permission:create_venues'])->only(['store']);
+        $this->middleware(['permission:edit_venues'])->only(['update', 'updateStatus', 'syncAmenities']);
+        $this->middleware(['permission:delete_venues'])->only(['destroy']);
+        $this->middleware(['permission:feature_venues'])->only(['toggleFeatured']);
     }
 
     /**

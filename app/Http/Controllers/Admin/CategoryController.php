@@ -15,11 +15,11 @@ class CategoryController extends Controller
     public function __construct(
         private CategoryRepository $categoryRepository
     ) {
-        $this->middleware(['permission:view categories'])->only(['index', 'show', 'active', 'statistics']);
-        $this->middleware(['permission:create categories'])->only(['store']);
-        $this->middleware(['permission:edit categories'])->only(['update', 'toggleActive']);
-        $this->middleware(['permission:delete categories'])->only(['destroy']);
-        $this->middleware(['permission:reorder categories'])->only(['reorder']);
+        $this->middleware(['permission:view_categories'])->only(['index', 'show', 'active', 'statistics']);
+        $this->middleware(['permission:create_categories'])->only(['store']);
+        $this->middleware(['permission:edit_categories'])->only(['update', 'toggleActive']);
+        $this->middleware(['permission:delete_categories'])->only(['destroy']);
+        $this->middleware(['permission:reorder_categories'])->only(['reorder']);
     }
 
     /**

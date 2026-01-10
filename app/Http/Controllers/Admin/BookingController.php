@@ -14,14 +14,14 @@ class BookingController extends Controller
     public function __construct(
         protected BookingRepository $bookingRepository
     ) {
-        $this->middleware(['permission:view bookings'])->only(['index', 'show', 'search', 'upcoming', 'past', 'statistics', 'overallStatistics']);
-        // $this->middleware(['permission:create bookings'])->only(['store']);
-        $this->middleware(['permission:edit bookings'])->only(['update', 'updateStatus']);
-        $this->middleware(['permission:delete bookings'])->only(['destroy']);
-        $this->middleware(['permission:confirm bookings'])->only(['confirm']);
-        $this->middleware(['permission:cancel bookings'])->only(['cancel']);
-        $this->middleware(['permission:complete bookings'])->only(['complete']);
-        $this->middleware(['permission:check availability'])->only(['checkAvailability']);
+        $this->middleware(['permission:view_bookings'])->only(['index', 'show', 'search', 'upcoming', 'past', 'statistics', 'overallStatistics']);
+        // $this->middleware(['permission:create_bookings'])->only(['store']);
+        $this->middleware(['permission:edit_bookings'])->only(['update', 'updateStatus']);
+        $this->middleware(['permission:delete_bookings'])->only(['destroy']);
+        $this->middleware(['permission:confirm_bookings'])->only(['confirm']);
+        $this->middleware(['permission:cancel_bookings'])->only(['cancel']);
+        $this->middleware(['permission:complete_bookings'])->only(['complete']);
+        $this->middleware(['permission:check_availability'])->only(['checkAvailability']);
     }
 
     /**

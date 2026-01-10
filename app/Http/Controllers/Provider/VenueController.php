@@ -16,10 +16,10 @@ class VenueController extends Controller
     public function __construct(
         protected VenueRepository $venueRepository
     ) {
-        $this->middleware(['permission:manage own venues'])->only(['index', 'show', 'myStatistics']);
-        $this->middleware(['permission:create venues'])->only(['store']);
-        $this->middleware(['permission:manage own venues'])->only(['update', 'updateStatus', 'syncAmenities', 'uploadPhoto', 'deletePhoto', 'setPrimaryPhoto']);
-        $this->middleware(['permission:manage own venues'])->only(['destroy']);
+        $this->middleware(['permission:manage_own_venues'])->only(['index', 'show', 'myStatistics']);
+        $this->middleware(['permission:create_venues'])->only(['store']);
+        $this->middleware(['permission:manage_own_venues'])->only(['update', 'updateStatus', 'syncAmenities', 'uploadPhoto', 'deletePhoto', 'setPrimaryPhoto']);
+        $this->middleware(['permission:manage_own_venues'])->only(['destroy']);
     }
 
     /**

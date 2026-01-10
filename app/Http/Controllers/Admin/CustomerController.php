@@ -14,10 +14,10 @@ class CustomerController extends Controller
     public function __construct(
         protected CustomerRepository $customerRepository
     ) {
-        $this->middleware(['permission:view customers'])->only(['index', 'show', 'search', 'statistics', 'overallStatistics']);
-        $this->middleware(['permission:create customers'])->only(['store']);
-        $this->middleware(['permission:edit customers'])->only(['update', 'updateStatus', 'verifyEmail']);
-        $this->middleware(['permission:delete customers'])->only(['destroy']);
+        $this->middleware(['permission:view_customers'])->only(['index', 'show', 'search', 'statistics', 'overallStatistics']);
+        $this->middleware(['permission:create_customers'])->only(['store']);
+        $this->middleware(['permission:edit_customers'])->only(['update', 'updateStatus', 'verifyEmail']);
+        $this->middleware(['permission:delete_customers'])->only(['destroy']);
     }
 
     /**

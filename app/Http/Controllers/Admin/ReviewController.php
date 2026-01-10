@@ -12,8 +12,8 @@ class ReviewController extends Controller
     public function __construct(
         protected ReviewRepository $reviewRepository
     ) {
-        $this->middleware(['permission:view reviews'])->only(['index', 'show', 'statistics', 'recent', 'topRatedVenues']);
-        $this->middleware(['permission:delete reviews'])->only(['destroy']);
+        $this->middleware(['permission:view_reviews'])->only(['index', 'show', 'statistics', 'recent', 'topRatedVenues']);
+        $this->middleware(['permission:delete_reviews'])->only(['destroy']);
     }
 
     /**

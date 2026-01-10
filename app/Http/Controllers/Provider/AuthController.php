@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -41,9 +40,8 @@ class AuthController extends Controller
                 'password' => Hash::make(Str::random(32)), // Random password, not used with OTP
             ]);
 
-            // Assign owner role for both web and provider guards
-            $user->assignRole('owner'); // web guard (default)
-            $user->assignRole(Role::findByName('owner', 'provider')); // provider guard
+            // Assign provider role with api guard
+            $user->assignRole('provider');
 
             // Create provider profile
             $provider = Provider::create([

@@ -14,10 +14,10 @@ class ProviderController extends Controller
     public function __construct(
         protected ProviderRepository $providerRepository
     ) {
-        $this->middleware(['permission:view providers'])->only(['index', 'show', 'statistics']);
-        // $this->middleware(['permission:create providers'])->only(['store']);
-        $this->middleware(['permission:edit providers'])->only(['update', 'updateStatus']);
-        $this->middleware(['permission:delete providers'])->only(['destroy']);
+        $this->middleware(['permission:view_providers'])->only(['index', 'show', 'statistics']);
+        // $this->middleware(['permission:create_providers'])->only(['store']);
+        $this->middleware(['permission:edit_providers'])->only(['update', 'updateStatus']);
+        $this->middleware(['permission:delete_providers'])->only(['destroy']);
     }
 
     /**
