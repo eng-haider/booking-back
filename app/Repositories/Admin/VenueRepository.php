@@ -155,8 +155,6 @@ class VenueRepository
     public function getStatistics(Venue $venue): array
     {
         return [
-            'total_resources' => $venue->resources()->count(),
-            'active_resources' => $venue->resources()->where('is_available', true)->count(),
             'total_bookings' => $venue->bookings()->count(),
             'pending_bookings' => $venue->bookings()->where('status', 'pending')->count(),
             'confirmed_bookings' => $venue->bookings()->where('status', 'confirmed')->count(),

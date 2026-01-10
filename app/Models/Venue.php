@@ -98,14 +98,6 @@ class Venue extends Model
     }
 
     /**
-     * Get the resources for this venue.
-     */
-    public function resources(): HasMany
-    {
-        return $this->hasMany(Resource::class);
-    }
-
-    /**
      * Get the amenities for this venue.
      */
     public function amenities(): BelongsToMany

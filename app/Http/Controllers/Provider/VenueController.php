@@ -157,7 +157,7 @@ class VenueController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Venue updated successfully',
-            'data' => $venue->fresh(['amenities', 'resources']),
+            'data' => $venue->fresh(['amenities']),
         ]);
     }
 

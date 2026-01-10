@@ -122,7 +122,7 @@ class VenueController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Venue updated successfully',
-            'data' => $venue->fresh(['owner', 'amenities', 'resources']),
+            'data' => $venue->fresh(['owner', 'amenities']),
         ]);
     }
 
@@ -278,7 +278,7 @@ class VenueController extends Controller
      */
     public function byProvider(int $providerId): JsonResponse
     {
-        $venues = $this->venueRepository->getByProvider($providerId, ['resources']);
+        $venues = $this->venueRepository->getByProvider($providerId, []);
 
         return response()->json([
             'success' => true,

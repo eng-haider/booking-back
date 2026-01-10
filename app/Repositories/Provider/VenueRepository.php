@@ -43,7 +43,7 @@ class VenueRepository
                 'created_at',
                 'updated_at',
             ])
-            ->allowedIncludes(['resources', 'amenities', 'photos', 'bookings', 'bookings.customer', 'owner', 'category', 'reviews', 'reviews.customer', 'reviews.user'])
+            ->allowedIncludes(['amenities', 'photos', 'bookings', 'bookings.customer', 'owner', 'category', 'reviews', 'reviews.customer', 'reviews.user'])
             ->defaultSort('-created_at')
             ->paginate($perPage);
     }
@@ -135,8 +135,6 @@ class VenueRepository
     public function getStatistics(Venue $venue): array
     {
         return [
-            'total_resources' => $venue->resources()->count(),
-            'active_resources' => $venue->resources()->where('is_available', true)->count(),
             'total_bookings' => $venue->bookings()->count(),
             'pending_bookings' => $venue->bookings()->where('status', 'pending')->count(),
             'confirmed_bookings' => $venue->bookings()->where('status', 'confirmed')->count(),

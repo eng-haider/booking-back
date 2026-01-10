@@ -43,7 +43,6 @@ class VenueRepository
                 'venueType',
                 'country',
                 'category',
-                'resources',
                 'amenities',
                 'photos',
                 'schedules',
@@ -64,7 +63,6 @@ class VenueRepository
             'owner',
             'venueType',
             'country',
-            'resources',
             'amenities',
             'photos',
             'schedules',
@@ -137,7 +135,6 @@ class VenueRepository
             'venue' => $venue,
             'date' => $date,
             'bookings' => $bookings,
-            'resources' => $venue->resources,
         ];
     }
 
