@@ -43,7 +43,7 @@ class VenueRepository
                 'created_at',
                 'updated_at',
             ])
-            ->allowedIncludes(['amenities', 'photos', 'bookings', 'bookings.customer', 'owner', 'category', 'reviews', 'reviews.customer', 'reviews.user'])
+            ->allowedIncludes(['amenities', 'photos', 'bookings', 'bookings.customer', 'owner', 'provider', 'category', 'reviews', 'reviews.customer', 'reviews.user'])
             ->defaultSort('-created_at')
             ->paginate($perPage);
     }
