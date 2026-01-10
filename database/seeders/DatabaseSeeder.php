@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'admin@booking.app',
             'phone' => '+1234567890',
-            'role' => 'admin',
+            'role' => 'super_admin',
         ]);
 
         User::factory()->create([

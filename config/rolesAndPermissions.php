@@ -4,7 +4,7 @@ return [
     'guard_name' => 'api',
     
     'roles' => [
-        'admin' => [
+        'super_admin' => [
             // Booking permissions (from Admin/BookingController)
             'view_bookings',
             'create_bookings',
@@ -60,9 +60,7 @@ return [
         ],
         
 
-              
-    }
-
+        
         'provider' => [
             // Venue permissions (from Provider/VenueController)
             'manage_own_venues',
