@@ -101,6 +101,8 @@ class QiCardPaymentService
                 'url' => $this->apiUrl . 'payment',
                 'terminal_id' => $this->terminalId,
                 'username' => $this->username,
+                'password_set' => !empty($this->password),
+                'password_length' => strlen($this->password ?? ''),
                 'payload' => $paymentData,
             ]);
 
@@ -125,6 +127,10 @@ class QiCardPaymentService
                     'body' => $errorBody,
                     'headers' => $response->headers(),
                     'request_url' => $this->apiUrl . 'payment',
+                    'terminal_id' => $this->terminalId,
+                    'terminal_id_type' => gettype($this->terminalId),
+                    'username' => $this->username,
+                    'password_set' => !empty($this->password),
                     'payload' => $paymentData,
                 ]);
                 
