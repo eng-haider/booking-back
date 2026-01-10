@@ -11,7 +11,7 @@ class StoreBookingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // return $this->user()?->role === 'provider' || $this->user()?->role === 'provider';
+        // return $this->user()?->role === 'owner' || $this->user()?->role === 'owner';
         return true;
     }
 

@@ -38,7 +38,7 @@ class VenueRepository
                 'created_at',
             ])
             ->allowedIncludes([
-                'provider',
+                'owner',
                 'venueType',
                 'country',
                 'category',
@@ -60,7 +60,7 @@ class VenueRepository
     public function findById(int $id)
     {
         return Venue::with([
-            'provider',
+            'owner',
             'venueType',
             'country',
             'resources',
@@ -78,7 +78,7 @@ class VenueRepository
     {
         return Venue::where('status', 'active')
             ->featured()
-            ->with(['provider', 'venueType', 'country', 'photos'])
+            ->with(['owner', 'venueType', 'country', 'photos'])
             ->limit($limit)
             ->get();
     }
@@ -95,7 +95,7 @@ class VenueRepository
                     ->orWhere('city', 'like', "%{$query}%")
                     ->orWhere('address', 'like', "%{$query}%");
             })
-            ->with(['provider', 'venueType', 'country', 'photos'])
+            ->with(['owner', 'venueType', 'country', 'photos'])
             ->paginate(15);
     }
 
@@ -114,7 +114,7 @@ class VenueRepository
             $query->where('country_id', $countryId);
         }
 
-        return $query->with(['provider', 'venueType', 'country', 'photos'])
+        return $query->with(['owner', 'venueType', 'country', 'photos'])
             ->paginate(15);
     }
 

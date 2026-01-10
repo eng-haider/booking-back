@@ -34,7 +34,7 @@ class VenueRepository
             ])
             ->allowedSorts(['id', 'name', 'city', 'rating', 'created_at', 'updated_at'])
             ->allowedIncludes([
-                'provider',
+                'owner',
                 'venueType',
                 'category',
                 'country',
@@ -178,7 +178,7 @@ class VenueRepository
      */
     public function getActive(): Collection
     {
-        return Venue::active()->with(['provider', 'venueType'])->get();
+        return Venue::active()->with(['owner', 'venueType'])->get();
     }
 
     /**
@@ -188,7 +188,7 @@ class VenueRepository
     {
         return Venue::where('is_featured', true)
             ->where('status', 'active')
-            ->with(['provider', 'venueType', 'photos'])
+            ->with(['owner', 'venueType', 'photos'])
             ->get();
     }
 
@@ -202,7 +202,7 @@ class VenueRepository
               ->orWhere('description', 'like', "%{$query}%")
               ->orWhere('city', 'like', "%{$query}%")
               ->orWhere('address', 'like', "%{$query}%");
-        })->with(['provider', 'venueType'])
+        })->with(['owner', 'venueType'])
           ->limit(20)
           ->get();
     }
@@ -249,7 +249,7 @@ class VenueRepository
     {
         return Venue::where('city', $city)
             ->where('status', 'active')
-            ->with(['provider', 'venueType'])
+            ->with(['owner', 'venueType'])
             ->get();
     }
 
@@ -260,7 +260,7 @@ class VenueRepository
     {
         return Venue::where('country', $country)
             ->where('status', 'active')
-            ->with(['provider', 'venueType'])
+            ->with(['owner', 'venueType'])
             ->get();
     }
 }

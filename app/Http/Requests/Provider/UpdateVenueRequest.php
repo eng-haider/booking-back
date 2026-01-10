@@ -12,7 +12,7 @@ class UpdateVenueRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->role === 'provider' && $this->user()->provider !== null;
+        return $this->user()?->role === 'owner' && $this->user()->provider !== null;
     }
 
     /**

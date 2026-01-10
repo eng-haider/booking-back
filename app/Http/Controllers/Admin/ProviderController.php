@@ -81,7 +81,7 @@ class ProviderController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'provider' => $provider,
+                'owner' => $provider,
                 'statistics' => $statistics,
             ],
         ]);

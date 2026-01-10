@@ -38,27 +38,27 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'owner' => 'users',
         ],
 
         'api' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'owner' => 'users',
         ],
 
-        'super_admin' => [
+        'admin' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'owner' => 'users',
         ],
 
-        'provider' => [
+        'owner' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'owner' => 'users',
         ],
 
         'customer' => [
             'driver' => 'jwt',
-            'provider' => 'customers',
+            'owner' => 'customers',
         ],
     ],
 
@@ -117,7 +117,7 @@ return [
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
+            'owner' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,

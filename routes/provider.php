@@ -26,7 +26,7 @@ Route::prefix('auth')->group(function () {
 });
 
 // Provider routes (protected with auth:provider and provider middleware)
-Route::middleware(['auth:provider', 'provider'])->group(function () {
+Route::middleware(['auth:provider', 'owner'])->group(function () {
     
     // Provider Auth Protected Routes
     Route::prefix('auth')->group(function () {

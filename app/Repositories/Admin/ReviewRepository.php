@@ -134,7 +134,7 @@ class ReviewRepository
             ->limit($limit)
             ->get()
             ->map(function ($item) {
-                $venue = \App\Models\Venue::with('provider')->find($item->venue_id);
+                $venue = \App\Models\Venue::with('owner')->find($item->venue_id);
                 return [
                     'venue' => $venue,
                     'avg_rating' => round($item->avg_rating, 2),
