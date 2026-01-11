@@ -96,6 +96,10 @@ class VenueRepository
      */
     public function updateSchedules(Venue $venue, array $schedules): void
     {
+        // Delete all existing schedules for this venue
+        $venue->schedules()->delete();
+
+        // Create new schedules from the provided data
         foreach ($schedules as $scheduleData) {
             // Map start_time/end_time to open_time/close_time
             $mappedData = [
@@ -105,16 +109,7 @@ class VenueRepository
                 'close_time' => $scheduleData['end_time'],
             ];
 
-            if (isset($scheduleData['id'])) {
-                // Update existing schedule
-                $schedule = $venue->schedules()->find($scheduleData['id']);
-                if ($schedule) {
-                    $schedule->update($mappedData);
-                }
-            } else {
-                // Create new schedule
-                $venue->schedules()->create($mappedData);
-            }
+            $venue->schedules()->create($mappedData);
         }
     }
 
