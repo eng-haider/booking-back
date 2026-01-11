@@ -154,10 +154,15 @@ class VenueController extends Controller
             $this->venueRepository->syncAmenities($venue, $amenityIds);
         }
 
+        // Update schedules if provided
+        if (isset($data['schedules'])) {
+            $this->venueRepository->updateSchedules($venue, $data['schedules']);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Venue updated successfully',
-            'data' => $venue->fresh(['amenities']),
+            'data' => $venue->fresh(['amenities', 'schedules']),
         ]);
     }
 

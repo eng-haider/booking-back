@@ -92,6 +92,25 @@ class VenueRepository
     }
 
     /**
+     * Update venue schedules
+     */
+    public function updateSchedules(Venue $venue, array $schedules): void
+    {
+        foreach ($schedules as $scheduleData) {
+            if (isset($scheduleData['id'])) {
+                // Update existing schedule
+                $schedule = $venue->schedules()->find($scheduleData['id']);
+                if ($schedule) {
+                    $schedule->update($scheduleData);
+                }
+            } else {
+                // Create new schedule
+                $venue->schedules()->create($scheduleData);
+            }
+        }
+    }
+
+    /**
      * Delete venue
      */
     public function delete(Venue $venue): bool

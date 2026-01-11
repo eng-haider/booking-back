@@ -40,6 +40,14 @@ class UpdateVenueRequest extends FormRequest
             'status' => ['sometimes', 'string', 'in:active,disabled'],
             'amenity_ids' => ['nullable', 'array'],
             'amenity_ids.*' => ['integer', 'exists:amenities,id'],
+            
+            // Schedule validation
+            'schedules' => ['nullable', 'array'],
+            'schedules.*.id' => ['nullable', 'integer', 'exists:schedules,id'],
+            'schedules.*.day_of_week' => ['required_with:schedules', 'integer', 'between:0,6'],
+            'schedules.*.start_time' => ['required_with:schedules', 'date_format:H:i'],
+            'schedules.*.end_time' => ['required_with:schedules', 'date_format:H:i', 'after:schedules.*.start_time'],
+            'schedules.*.is_available' => ['nullable', 'boolean'],
         ];
     }
 
@@ -57,6 +65,12 @@ class UpdateVenueRequest extends FormRequest
             'buffer_minutes.min' => 'Buffer minutes must be at least 0',
             'status.in' => 'Status must be active or disabled',
             'amenity_ids.*.exists' => 'One or more amenities do not exist',
+            
+            // Schedule messages
+            'schedules.*.day_of_week.between' => 'Day of week must be between 0 (Sunday) and 6 (Saturday)',
+            'schedules.*.start_time.date_format' => 'Start time must be in HH:MM format',
+            'schedules.*.end_time.date_format' => 'End time must be in HH:MM format',
+            'schedules.*.end_time.after' => 'End time must be after start time',
         ];
     }
 }
