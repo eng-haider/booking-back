@@ -40,7 +40,8 @@ class UpdateVenueRequest extends FormRequest
             'status' => ['sometimes', 'string', 'in:active,disabled'],
             'amenity_ids' => ['nullable', 'array'],
             'amenity_ids.*' => ['integer', 'exists:amenities,id'],
-            
+
+
             // Schedule validation
             'schedules' => ['nullable', 'array'],
             'schedules.*.id' => ['nullable', 'integer', 'exists:schedules,id'],
