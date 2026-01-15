@@ -1,0 +1,293 @@
+{
+  "info": {
+    "name": "Provider Offers API",
+    "description": "Complete API collection for managing venue offers by providers",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{provider_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/provider",
+      "type": "string"
+    },
+    {
+      "key": "provider_token",
+      "value": "your_provider_token_here",
+      "type": "string"
+    },
+    {
+      "key": "venue_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "offer_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. List All Offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers?include=venue",
+          "host": ["{{base_url}}"],
+          "path": ["offers"],
+          "query": [
+            {
+              "key": "include",
+              "value": "venue"
+            },
+            {
+              "key": "filter[is_active]",
+              "value": "true",
+              "disabled": true
+            },
+            {
+              "key": "filter[active]",
+              "value": "true",
+              "disabled": true
+            },
+            {
+              "key": "filter[venue_id]",
+              "value": "{{venue_id}}",
+              "disabled": true
+            },
+            {
+              "key": "sort",
+              "value": "-created_at",
+              "disabled": true
+            },
+            {
+              "key": "per_page",
+              "value": "15",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Get all offers for the authenticated provider with optional filters and includes"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Create Percentage Offer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"venue_id\": {{venue_id}},\n  \"title\": \"Weekend Special - 20% Off\",\n  \"description\": \"Get 20% off on all weekend bookings\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"min_booking_hours\": 2,\n  \"max_uses\": 100,\n  \"start_date\": \"2026-02-01\",\n  \"end_date\": \"2026-02-28\",\n  \"is_active\": true,\n  \"terms_and_conditions\": \"Valid for Saturday and Sunday bookings only\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/offers",
+          "host": ["{{base_url}}"],
+          "path": ["offers"]
+        },
+        "description": "Create a new percentage-based offer"
+      },
+      "response": []
+    },
+    {
+      "name": "3. Create Fixed Amount Offer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"venue_id\": {{venue_id}},\n  \"title\": \"Early Bird Special - $100 Off\",\n  \"description\": \"Book early and save $100\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 100,\n  \"min_booking_hours\": 4,\n  \"max_uses\": 50,\n  \"start_date\": \"2026-02-01\",\n  \"end_date\": \"2026-12-31\",\n  \"is_active\": true,\n  \"terms_and_conditions\": \"Must book at least 7 days in advance\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/offers",
+          "host": ["{{base_url}}"],
+          "path": ["offers"]
+        },
+        "description": "Create a new fixed amount offer"
+      },
+      "response": []
+    },
+    {
+      "name": "4. Get Single Offer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers/{{offer_id}}?include=venue",
+          "host": ["{{base_url}}"],
+          "path": ["offers", "{{offer_id}}"],
+          "query": [
+            {
+              "key": "include",
+              "value": "venue"
+            }
+          ]
+        },
+        "description": "Get details of a specific offer"
+      },
+      "response": []
+    },
+    {
+      "name": "5. Update Offer",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"discount_value\": 25,\n  \"max_uses\": 150,\n  \"is_active\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/offers/{{offer_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["offers", "{{offer_id}}"]
+        },
+        "description": "Update an existing offer (all fields optional)"
+      },
+      "response": []
+    },
+    {
+      "name": "6. Toggle Offer Active Status",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers/{{offer_id}}/toggle-active",
+          "host": ["{{base_url}}"],
+          "path": ["offers", "{{offer_id}}", "toggle-active"]
+        },
+        "description": "Toggle the active status of an offer"
+      },
+      "response": []
+    },
+    {
+      "name": "7. Delete Offer",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers/{{offer_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["offers", "{{offer_id}}"]
+        },
+        "description": "Delete an offer permanently"
+      },
+      "response": []
+    },
+    {
+      "name": "8. Get Offer Statistics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers/statistics",
+          "host": ["{{base_url}}"],
+          "path": ["offers", "statistics"]
+        },
+        "description": "Get statistics for all provider's offers"
+      },
+      "response": []
+    },
+    {
+      "name": "9. Get Venue Offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers/venue/{{venue_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["offers", "venue", "{{venue_id}}"]
+        },
+        "description": "Get all offers for a specific venue"
+      },
+      "response": []
+    },
+    {
+      "name": "10. Get Active Venue Offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers/venue/{{venue_id}}/active",
+          "host": ["{{base_url}}"],
+          "path": ["offers", "venue", "{{venue_id}}", "active"]
+        },
+        "description": "Get only currently active offers for a venue"
+      },
+      "response": []
+    },
+    {
+      "name": "11. Filter Active Offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers?filter[active]=true&include=venue",
+          "host": ["{{base_url}}"],
+          "path": ["offers"],
+          "query": [
+            {
+              "key": "filter[active]",
+              "value": "true"
+            },
+            {
+              "key": "include",
+              "value": "venue"
+            }
+          ]
+        },
+        "description": "Get all currently active offers (within date range and is_active=true)"
+      },
+      "response": []
+    },
+    {
+      "name": "12. Filter Available Offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/offers?filter[available]=true&include=venue",
+          "host": ["{{base_url}}"],
+          "path": ["offers"],
+          "query": [
+            {
+              "key": "filter[available]",
+              "value": "true"
+            },
+            {
+              "key": "include",
+              "value": "venue"
+            }
+          ]
+        },
+        "description": "Get available offers (active and not maxed out)"
+      },
+      "response": []
+    }
+  ]
+}

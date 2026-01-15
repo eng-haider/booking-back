@@ -3,6 +3,7 @@
 use App\Http\Controllers\Provider\AmenityController;
 use App\Http\Controllers\Provider\AuthController;
 use App\Http\Controllers\Provider\BookingController;
+use App\Http\Controllers\Provider\OfferController;
 use App\Http\Controllers\Provider\ProfileController;
 use App\Http\Controllers\Provider\ReviewController;
 use App\Http\Controllers\Provider\VenueController;
@@ -79,6 +80,19 @@ Route::middleware(['auth:provider', 'provider'])->group(function () {
         Route::get('/', [ReviewController::class, 'index']);
         Route::get('/statistics', [ReviewController::class, 'statistics']);
         Route::get('/venue/{venueId}', [ReviewController::class, 'getVenueReviews']);
+    });
+
+    // Offer Management
+    Route::prefix('offers')->group(function () {
+        Route::get('/', [OfferController::class, 'index']);
+        Route::post('/', [OfferController::class, 'store']);
+        Route::get('/statistics', [OfferController::class, 'statistics']);
+        Route::get('/{id}', [OfferController::class, 'show']);
+        Route::put('/{id}', [OfferController::class, 'update']);
+        Route::delete('/{id}', [OfferController::class, 'destroy']);
+        Route::patch('/{id}/toggle-active', [OfferController::class, 'toggleActive']);
+        Route::get('/venue/{venueId}', [OfferController::class, 'venueOffers']);
+        Route::get('/venue/{venueId}/active', [OfferController::class, 'activeVenueOffers']);
     });
     
 });

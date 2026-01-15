@@ -106,6 +106,14 @@ class Venue extends Model
     }
 
     /**
+     * Get the offers for this venue.
+     */
+    public function offers(): HasMany
+    {
+        return $this->hasMany(Offer::class);
+    }
+
+    /**
      * Get the primary photo for this venue.
      */
     public function primaryPhoto(): HasMany
