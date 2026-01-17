@@ -114,6 +114,29 @@ class Venue extends Model
     }
 
     /**
+     * Get active offers for this venue (available to customers).
+     */
+    public function activeOffers(): HasMany
+    {
+        return $this->hasMany(Offer::class)
+            ->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->where(function($query) {
+                $query->whereNull('max_uses')
+                    ->orWhereColumn('used_count', '<', 'max_uses');
+            });
+    }
+
+    /**
+     * Check if venue has active offers.
+     */
+    public function hasActiveOffers(): bool
+    {
+        return $this->activeOffers()->exists();
+    }
+
+    /**
      * Get the primary photo for this venue.
      */
     public function primaryPhoto(): HasMany

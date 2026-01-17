@@ -3,29 +3,41 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PublicOfferResource;
+use App\Http\Resources\VenueResource;
+use App\Models\Offer;
 use App\Repositories\Customer\VenueRepository;
+use App\Services\OfferService;
 use Illuminate\Http\Request;
 
 class VenueController extends Controller
 {
     protected $venueRepository;
+    protected $offerService;
 
-    public function __construct(VenueRepository $venueRepository)
-    {
+    public function __construct(
+        VenueRepository $venueRepository,
+        OfferService $offerService
+    ) {
         $this->venueRepository = $venueRepository;
+        $this->offerService = $offerService;
     }
 
     /**
      * Display a listing of venues.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $venues = $this->venueRepository->getAll();
+            // Get filter parameter
+            $hasOffers = $request->boolean('has_offers');
+            
+            // Get venues with optional offer filter
+            $venues = $this->venueRepository->getAll($hasOffers);
 
             return response()->json([
                 'success' => true,
-                'data' => $venues,
+                'data' => VenueResource::collection($venues),
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -189,3 +201,4 @@ class VenueController extends Controller
         }
     }
 }
+

@@ -87,18 +87,34 @@ class BookingRepository
             
             $data['end_time'] = $endTime->format('H:i');
             
-            // Calculate total price based on duration
-            $hours = $bookingDuration;
-            
-            // Use price_per_hour if available, otherwise use base_price, or default to 0
-            if ($venue->price_per_hour) {
-                $data['total_price'] = $venue->price_per_hour * $hours;
-            } elseif ($venue->base_price) {
-                $data['total_price'] = $venue->base_price;
-            } else {
-                // Default to 0 if no price is set (can be updated later)
-                $data['total_price'] = 0;
+            // Calculate base price
+            $basePrice = $venue->base_price ?? 0;
+            $finalPrice = $basePrice;
+            $discount = 0;
+            $offerId = null;
+
+            // Check for active offers and apply the best one
+            $offer = $venue->activeOffers()
+                ->orderByDesc('discount_value')
+                ->first();
+
+            if ($offer) {
+                $offerService = app(\App\Services\OfferService::class);
+                $result = $offerService->applyOffer($offer, $basePrice);
+                
+                if ($result['applied']) {
+                    $discount = $result['discount'];
+                    $finalPrice = $result['final_price'];
+                    $offerId = $offer->id;
+                    
+                    // Increment offer usage counter
+                    $offer->increment('used_count');
+                }
             }
+
+            $data['total_price'] = $finalPrice;
+            $data['discount'] = $discount;
+            $data['offer_id'] = $offerId;
             
             // Get pending status
             $pendingStatus = Status::where('slug', 'pending')->firstOrFail();

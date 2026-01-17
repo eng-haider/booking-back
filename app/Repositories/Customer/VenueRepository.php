@@ -17,9 +17,9 @@ class VenueRepository
     /**
      * Get all venues with filtering, sorting, and pagination.
      */
-    public function getAll(): LengthAwarePaginator
+    public function getAll(bool $hasOffers = false): LengthAwarePaginator
     {
-        return QueryBuilder::for(Venue::class)
+        $query = QueryBuilder::for(Venue::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
                 AllowedFilter::exact('provider_id'),
@@ -47,10 +47,25 @@ class VenueRepository
                 'photos',
                 'schedules',
                 'reviews',
-                'reviews.customer'
+                'reviews.customer',
+                'activeOffers',
             ])
-            ->where('status', 'active')
-            ->defaultSort('-created_at')
+            ->where('status', 'active');
+
+        // Filter by venues with active offers if requested
+        if ($hasOffers) {
+            $query->whereHas('offers', function($q) {
+                $q->where('is_active', true)
+                  ->where('start_date', '<=', now())
+                  ->where('end_date', '>=', now())
+                  ->where(function($query) {
+                      $query->whereNull('max_uses')
+                          ->orWhereColumn('used_count', '<', 'max_uses');
+                  });
+            });
+        }
+
+        return $query->defaultSort('-created_at')
             ->paginate(request('per_page', 15));
     }
 

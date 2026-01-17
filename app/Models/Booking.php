@@ -22,6 +22,8 @@ class Booking extends Model
         'start_time',
         'end_time',
         'total_price',
+        'discount',
+        'offer_id',
         'status_id',
         'payment_status',
         'notes',
@@ -37,6 +39,7 @@ class Booking extends Model
         return [
             'booking_date' => 'date',
             'total_price' => 'decimal:2',
+            'discount' => 'decimal:2',
             'cancelled_at' => 'datetime',
             'confirmed_at' => 'datetime',
             'completed_at' => 'datetime',
@@ -81,6 +84,14 @@ class Booking extends Model
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class);
+    }
+
+    /**
+     * Get the offer applied to this booking.
+     */
+    public function offer(): BelongsTo
+    {
+        return $this->belongsTo(Offer::class);
     }
 
     /**
