@@ -29,13 +29,6 @@ class VenueResource extends JsonResource
             
             // Offers information
             'has_offers' => $this->hasActiveOffers(),
-            'best_offer' => $this->when(
-                $this->relationLoaded('activeOffers') || method_exists($this, 'bestOffer'),
-                function() {
-                    $bestOffer = $this->bestOffer();
-                    return $bestOffer ? new PublicOfferResource($bestOffer) : null;
-                }
-            ),
             'active_offers' => PublicOfferResource::collection(
                 $this->whenLoaded('activeOffers')
             ),
