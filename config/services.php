@@ -43,7 +43,7 @@ return [
         'public_key_path' => env('QICARD_PUBLIC_KEY_PATH', 'storage/qicard/public-key.pem'),
         'verify_webhooks' => env('QICARD_VERIFY_WEBHOOKS', false),
         'webhook_url' => env('QICARD_WEBHOOK_URL'),
-        'return_url' => env('QICARD_RETURN_URL', env('APP_URL') . '/api/customer/payment/callback'),
+        'return_url' => env('QICARD_RETURN_URL'),
         'cancel_url' => env('QICARD_CANCEL_URL', env('APP_URL') . '/api/customer/payment/cancel'),
         'currency' => env('QICARD_CURRENCY', 'IQD'),
     ],
