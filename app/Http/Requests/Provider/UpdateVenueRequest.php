@@ -35,6 +35,8 @@ class UpdateVenueRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'base_price' => ['sometimes', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'max:3'],
+            
+            'booking_duration_hours' => ['nullable', 'integer', 'min:1'],
             'buffer_minutes' => ['nullable', 'integer', 'min:0'],
             'timezone' => ['nullable', 'string', 'max:50'],
             'status' => ['sometimes', 'string', 'in:active,disabled'],
@@ -63,6 +65,7 @@ class UpdateVenueRequest extends FormRequest
             'slug.unique' => 'This slug is already taken',
             'base_price.min' => 'Base price must be at least 0',
             'currency.max' => 'Currency code must be 3 characters',
+            'booking_duration_hours.min' => 'Booking duration must be at least 1 hour',
             'buffer_minutes.min' => 'Buffer minutes must be at least 0',
             'status.in' => 'Status must be active or disabled',
             'amenity_ids.*.exists' => 'One or more amenities do not exist',
