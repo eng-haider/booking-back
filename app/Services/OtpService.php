@@ -35,12 +35,16 @@ class OtpService
     public function generateOtp(string $phone): array
     {
         // ========================================
-        // FOR TESTING ONLY - COMMENT OUT IN PRODUCTION
+        // DEVELOPMENT MODE - Default OTP for all customers
+        // To enable: Uncomment the line below
         // ========================================
-        $code = '123456'; // Simple test OTP
+        $code = '123456'; // Default OTP for customers in development
         // ========================================
         
-        // PRODUCTION CODE - UNCOMMENT IN PRODUCTION
+        // ========================================
+        // PRODUCTION MODE - Generate random OTP
+        // To enable: Comment out the line above and uncomment the lines below
+        // ========================================
         // Check if it's a test user
         // $testOtp = $this->getTestOtp($phone);
         // Generate a 6-digit code
